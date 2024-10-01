@@ -56,9 +56,21 @@ public class ProductServlet extends HttpServlet{
 			String path = req.getPathInfo();
 			try {
 				String productId = path.substring(1);
-
+				Gson gson = new Gson();
+				Product product = gson.fromJson(req.getReader(), Product.class);
+				ProductDao.updateProduct(productId, product);
+				res.setStatus(200);
+				res.getWriter().print(JsonUtil.getJsonString(true, "updated "+productId));
+				res.flushBuffer();
 			} catch (Exception e) {
-				e.printStackTrace();
+				try {
+					res.setStatus(400);
+					res.getWriter().print(JsonUtil.getJsonString(false, e.getMessage()));
+					res.flushBuffer();
+
+				} catch (Exception e2) {
+					e.printStackTrace();
+				}
 			}
 		}
 	@Override

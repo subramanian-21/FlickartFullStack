@@ -73,7 +73,19 @@ public class ProductDao {
 	}
 	public static boolean updateProduct(String productId, Product product) throws Exception {
 		// add id at last
+
+		System.out.println("//////////////////////////////");
+		System.out.println(product.getProductName());
+		System.out.println(product.getPrice());
+		System.out.println(product.getImage());
+		System.out.println(product.getStockCount());
+		System.out.println(product.getProductDescription());
+		System.out.println(productId);;
+		System.out.println("//////////////////////////////");
+
+
 		String query = CreateQuery.getUpdateQuery(TABLE_NAME, PRODUCT_ID_COL ,PRODUCT_NAME_COL, PRODUCT_PRICE_COL, PRODUCT_IMAGE_COL, PRODUCT_STOCK_COL, PRODUCT_DESCRIPTION_COL);
+		System.out.println(query);
 		Connection con = JDBCUtil.getConnection();
 		PreparedStatement ps = con.prepareStatement(query);
 		
@@ -83,6 +95,8 @@ public class ProductDao {
 		ps.setInt(4, product.getStockCount());
 		ps.setString(5, product.getProductDescription());
 		ps.setString(6, productId);
+
+		ps.executeUpdate();
 		return true;
 	}
 	public static boolean updateProductPrice(String productId, float price) throws Exception {

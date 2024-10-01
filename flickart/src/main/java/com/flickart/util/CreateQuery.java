@@ -2,10 +2,11 @@ package com.flickart.util;
 public class CreateQuery {
 	public static String getSelectQuery(String tableName, String... columns) {
 		StringBuilder query = new StringBuilder("select * from ");
+		query.append(tableName);
 		if(columns.length == 0) {
 			return query.toString();
 		}
-		query.append(tableName);
+
 		query.append(" where");
 		for(int i = 0;i<columns.length;i++) {
 			query.append(" ").append(columns[i]).append("=?");
@@ -48,7 +49,7 @@ public class CreateQuery {
 		StringBuilder query = new StringBuilder("update ");
 		query.append(tableName).append(" set ");
 		for(int i = 0;i<setColumn.length;i++) {
-			query.append(setColumn).append("=? ");
+			query.append(setColumn[i]).append("=? ");
 			if(i != setColumn.length-1) {
 				query.append(",");
 			}
