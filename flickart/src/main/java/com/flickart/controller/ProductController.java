@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.flickart.dao.CategoriesDao;
 import com.flickart.dao.ProductDao;
 import com.flickart.dao.ReviewDao;
 import com.flickart.dao.UserDao;
@@ -20,37 +21,27 @@ public class ProductController {
 		Gson gson = new Gson();
 		 for(JsonElement jsonEle : productJsonArray) {
         	 Product product = gson.fromJson(jsonEle, Product.class);
-        	 ProductDao.addProduct(product.getProductName(), product.getProductDescription(), product.getPrice(), product.getStockCount(), product.getImage(), product.getImages());
+        	 ProductDao.addProduct(product);
          }
 		 
 		 return productJsonArray.size();
 	}
 	public static int addProduct(Product product) throws ClassNotFoundException, SQLException {
 		System.out.println(product.getImages());
-		ProductDao.addProduct(product.getProductName(), product.getProductDescription(), product.getPrice(), product.getStockCount(), product.getImage(), product.getImages());
+		ProductDao.addProduct(product);
 		return 1;
 	}
 	public static void updateProduct(String productId, Product product) {
 		
 	}
-	public static Map<Object, Object> getAllProducts(int limit, int offset) throws SQLException, ClassNotFoundException {
-		int totalProductCount = ProductDao.getProductsCount();
-
-		Map<Object, Object> map = new HashMap<>();
-		map.put("limit", limit);
-		map.put("offset", offset);
-		map.put("totalCount", totalProductCount);
-		boolean hasNext = false;
-		if(offset + limit < totalProductCount) {
-			hasNext = true;
-		}
-		map.put("hasNext", hasNext);
-		map.put("products", ProductDao.getAllProducts(limit, offset));
+	public static Map<Object, Object> getAllProducts(int limit, int offset, String searchString) throws SQLException, ClassNotFoundException {
+		Map<Object, Object> map = ProductDao.getAllProducts(limit, offset, searchString);
+		map.put("categories", CategoriesDao.searchByCategory(searchString));
 		return map;
 	}
 
-	public static Map<Object, Object> getAllProductsAdmin(int limit, int offset) throws SQLException, ClassNotFoundException {
-		int totalProductCount = ProductDao.getProductsCount();
+	public static Map<Object, Object> getAllProductsAdmin(int limit, int offset, String searchString) throws SQLException, ClassNotFoundException {
+		int totalProductCount = ProductDao.getProductsCount(searchString);
 
 		Map<Object, Object> map = new HashMap<>();
 		map.put("limit", limit);
@@ -61,7 +52,9 @@ public class ProductController {
 			hasNext = true;
 		}
 		map.put("hasNext", hasNext);
-		map.put("products", ProductDao.getAllProductsAdmin(limit, offset));
+		map.put("products", ProductDao.getAllProductsAdmin(limit, offset, searchString));
+		map.put("categories", CategoriesDao.searchByCategory(searchString));
+
 		return map;
 	}
 	public static Review addProductReview(String accessToken,Review review) throws Exception {

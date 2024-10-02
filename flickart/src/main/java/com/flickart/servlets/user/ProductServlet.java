@@ -18,8 +18,9 @@ public class ProductServlet extends HttpServlet {
             if(path.equals("/getAll")) {
                 int limit = Integer.parseInt(req.getParameter("limit"));
                 int offset = Integer.parseInt(req.getParameter("offset"));
+                String search = req.getParameter("search");
 
-                JsonUtil.sendJsonResponse(200, res, ProductController.getAllProducts(limit, offset));
+                JsonUtil.sendJsonResponse(200, res, ProductController.getAllProducts(limit, offset, search));
             }else {
                 String productId = path.substring(1);
                 JsonUtil.sendJsonResponse(200, res,  ProductDao.getProduct(productId));

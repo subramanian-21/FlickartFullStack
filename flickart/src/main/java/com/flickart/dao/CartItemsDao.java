@@ -28,7 +28,7 @@ public class CartItemsDao {
         preparedStatement.setString(2, cartId);
         preparedStatement.setString(3, product.getProductId());
         preparedStatement.setInt(4, 1);
-        preparedStatement.setFloat(5, product.getPrice());
+        preparedStatement.setDouble(5, product.getPrice());
         preparedStatement.executeUpdate();
         return true;
     }

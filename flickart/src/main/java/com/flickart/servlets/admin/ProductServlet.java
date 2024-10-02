@@ -7,7 +7,6 @@ import com.flickart.dao.ProductDao;
 import com.flickart.model.Product;
 import com.flickart.util.JsonUtil;
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,8 +64,8 @@ public class ProductServlet extends HttpServlet{
 				if(path.equals("/getAll")) {
 					int limit = Integer.parseInt(req.getParameter("limit"));
 					int offset = Integer.parseInt(req.getParameter("offset"));
-
-					JsonUtil.sendJsonResponse(200, res, ProductController.getAllProductsAdmin(limit, offset));
+					String search = req.getParameter("search");
+					JsonUtil.sendJsonResponse(200, res, ProductController.getAllProductsAdmin(limit, offset, search));
 				}else {
 					String productId = path.substring(1);
 					JsonUtil.sendJsonResponse(200, res, ProductDao.getProductAdmin(productId));

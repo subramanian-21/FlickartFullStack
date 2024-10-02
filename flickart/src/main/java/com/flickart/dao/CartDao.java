@@ -71,11 +71,11 @@ public class CartDao {
         removeFromCart(cartId, quantity, product);
         return true;
     }
-    public static  boolean updateCartTotalPrice(String cartId, float productPrice) throws SQLException, ClassNotFoundException {
+    public static  boolean updateCartTotalPrice(String cartId, double productPrice) throws SQLException, ClassNotFoundException {
         Connection connection  = JDBCUtil.getConnection();
         String query = "update "+TABLE_NAME+" set totalAmount = totalAmount + ? where cartId = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setFloat(1, productPrice);
+        preparedStatement.setDouble(1, productPrice);
         preparedStatement.setString(2, cartId);
         preparedStatement.executeUpdate();
         return true;

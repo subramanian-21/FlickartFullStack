@@ -43,6 +43,7 @@ public class ReviewDao {
         ps.setFloat(4, review.getRating());
         ps.setString(5, review.getComment());
         ps.executeUpdate();
+        ProductDao.updateProductRating(review.getProductId(), review.getRating());
         return true;
     }
 }
