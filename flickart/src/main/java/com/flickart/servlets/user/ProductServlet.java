@@ -19,14 +19,10 @@ public class ProductServlet extends HttpServlet {
                 int limit = Integer.parseInt(req.getParameter("limit"));
                 int offset = Integer.parseInt(req.getParameter("offset"));
 
-                res.setStatus(200);
-                res.getWriter().print(JsonUtil.getJsonString(true, ProductController.getAllProducts(limit, offset)));
-                res.flushBuffer();
+                JsonUtil.sendJsonResponse(200, res, ProductController.getAllProducts(limit, offset));
             }else {
                 String productId = path.substring(1);
-                res.setStatus(200);
-                res.getWriter().print(JsonUtil.getJsonString(true, ProductDao.getProduct(productId)));
-                res.flushBuffer();
+                JsonUtil.sendJsonResponse(200, res,  ProductDao.getProduct(productId));
             }
         } catch (Exception e) {
             JsonUtil.showError(res, e);

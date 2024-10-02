@@ -37,9 +37,7 @@ public class ProductServlet extends HttpServlet{
 			}else {
 				throw new Exception("Path not found");
 			}
-			res.setStatus(200);
-		    res.getWriter().print(JsonUtil.getJsonString(true, rowCount +" products added successfully"));
-		    res.flushBuffer();
+			JsonUtil.sendJsonResponse(200, res, rowCount+" products added");
 	         
 		}catch (Exception e) {
 			JsonUtil.showError(res, e);
@@ -53,9 +51,8 @@ public class ProductServlet extends HttpServlet{
 				Gson gson = new Gson();
 				Product product = gson.fromJson(req.getReader(), Product.class);
 				ProductDao.updateProduct(productId, product);
-				res.setStatus(200);
-				res.getWriter().print(JsonUtil.getJsonString(true, "updated "+productId));
-				res.flushBuffer();
+				JsonUtil.sendJsonResponse(200, res, "updated "+productId);
+
 			} catch (Exception e) {
 				JsonUtil.showError(res, e);
 			}
@@ -69,14 +66,10 @@ public class ProductServlet extends HttpServlet{
 					int limit = Integer.parseInt(req.getParameter("limit"));
 					int offset = Integer.parseInt(req.getParameter("offset"));
 
-					res.setStatus(200);
-					res.getWriter().print(JsonUtil.getJsonString(true, ProductController.getAllProducts(limit, offset)));
-					res.flushBuffer();
+					JsonUtil.sendJsonResponse(200, res, ProductController.getAllProductsAdmin(limit, offset));
 				}else {
 					String productId = path.substring(1);
-					res.setStatus(200);
-					res.getWriter().print(JsonUtil.getJsonString(true, ProductDao.getProductAdmin(productId)));
-					res.flushBuffer();
+					JsonUtil.sendJsonResponse(200, res, ProductDao.getProductAdmin(productId));
 				}
 			} catch (Exception e) {
 				JsonUtil.showError(res, e);
@@ -84,14 +77,12 @@ public class ProductServlet extends HttpServlet{
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest req, HttpServletResponse res) {
 		try{
 			String path = req.getPathInfo();
 			String productId = path.substring(1);
 			ProductDao.deleteProduct(productId);
-			res.setStatus(200);
-			res.getWriter().print(JsonUtil.getJsonString(true, "deleted "+productId));
-			res.flushBuffer();
+			JsonUtil.sendJsonResponse(200, res, "deleted "+productId);
 		}catch(Exception e) {
 			JsonUtil.showError(res, e);
 		}

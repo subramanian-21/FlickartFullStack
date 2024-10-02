@@ -19,9 +19,7 @@ public class ReviewServlet extends HttpServlet {
             Gson gson = new Gson();
             Review review = gson.fromJson(req.getReader(), Review.class);
             ProductController.addProductReview(accessToken, review);
-            res.setStatus(200);
-            res.getWriter().print(JsonUtil.getJsonString(true, review));
-            res.flushBuffer();
+            JsonUtil.sendJsonResponse(200, res, "Review added successfully");
         }catch (Exception e){
             JsonUtil.showError(res, e);
         }

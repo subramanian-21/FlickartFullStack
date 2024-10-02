@@ -27,11 +27,11 @@ public class JwtUtil {
 		return createToken(JsonUtil.stringifyDto(adminUser), ADMIN_REFRESH_TOKEN_EXPIRATION);
 	}
 
-	public static String createAccessToken(User user) {
-		return createToken(JsonUtil.stringifyDto(user), ACCESS_TOKEN_EXPIRATION);
+	public static String createAccessToken(String email) {
+		return createToken(email, ACCESS_TOKEN_EXPIRATION);
 	}
-	public static String createRefreshToken(User user) {
-		return createToken(JsonUtil.stringifyDto(user), REFRESH_TOKEN_EXPIRATION);
+	public static String createRefreshToken(String email) {
+		return createToken(email, REFRESH_TOKEN_EXPIRATION);
 	}
 
 	private static String createToken(String message, long expairingTime) {

@@ -25,9 +25,23 @@ public class JsonUtil {
 		try {
 			res.setStatus(400);
 			res.getWriter().print(JsonUtil.getJsonString(false, e.getMessage()));
-			res.flushBuffer();
-		} catch (Exception e2) {
-			e.printStackTrace();
+			res.getWriter().flush();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	public static void sendJsonResponse(int status ,HttpServletResponse res, Object json) {
+		try {
+			res.setStatus(status);
+			res.setContentType("application/json");
+			boolean success = true;
+			if(status >= 400) {
+				success = false;
+			}
+			res.getWriter().print(JsonUtil.getJsonString(success, json));
+			res.getWriter().flush();
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 	}
 	public static String stringifyDto(Object object) {

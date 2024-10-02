@@ -20,14 +20,14 @@ public class CartItemsDao {
     private static final String QUANTITY_COL = "quantity";
     private static final String PRICE_COL = "price";
 
-    static boolean addToCart(String cartId, Product product, int quantiy) throws SQLException, ClassNotFoundException {
+    static boolean addToCart(String cartId, Product product) throws SQLException, ClassNotFoundException {
         Connection connection = JDBCUtil.getConnection();
         String query = CreateQuery.getInsertQuery(TABLE_NAME, CART_ITEM_ID_COL, CART_ID_COL, PRODUCT_ID_COL, QUANTITY_COL, PRICE_COL);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, UniqueId.getUniqueId());
         preparedStatement.setString(2, cartId);
         preparedStatement.setString(3, product.getProductId());
-        preparedStatement.setInt(4, quantiy);
+        preparedStatement.setInt(4, 1);
         preparedStatement.setFloat(5, product.getPrice());
         preparedStatement.executeUpdate();
         return true;
@@ -49,7 +49,9 @@ public class CartItemsDao {
     }
     static boolean removeFromCart(String cartId, String productId) throws SQLException, ClassNotFoundException {
         Connection connection = JDBCUtil.getConnection();
-        PreparedStatement ps = connection.prepareStatement("delete from " + TABLE_NAME + " where " + CART_ITEM_ID_COL + " = ? & "+PRODUCT_ID_COL+" = ?");
+        PreparedStatement ps = connection.prepareStatement("delete from " + TABLE_NAME + " where " + CART_ID_COL + " = ? & "+PRODUCT_ID_COL+" = ?");
+        ps.setString(1, cartId);
+        ps.setString(2, productId);
         return ps.executeUpdate() > 0;
     }
     static boolean updateProductCount(String cartId, String productId, int quantity) throws SQLException, ClassNotFoundException {
@@ -64,5 +66,16 @@ public class CartItemsDao {
         ps.setString(2, cartId);
         ps.setString(3, productId);
         return ps.executeUpdate() > 0;
+    }
+    static int getProductCount(String cartId, String productId) throws SQLException, ClassNotFoundException {
+        Connection connection = JDBCUtil.getConnection();
+        PreparedStatement ps = connection.prepareStatement(CreateQuery.getSelectQuery(TABLE_NAME,CART_ID_COL ,PRODUCT_ID_COL));
+        ps.setString(1, cartId);
+        ps.setString(2, productId);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()) {
+            return rs.getInt(PRODUCT_ID_COL);
+        }
+        throw new SQLException("No product found");
     }
 }

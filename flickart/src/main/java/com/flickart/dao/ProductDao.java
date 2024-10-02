@@ -139,14 +139,14 @@ public class ProductDao {
 		List<String > imageList = getProductImages(productId);
 		return new Product(productId, rs.getString(PRODUCT_NAME_COL), rs.getString(PRODUCT_DESCRIPTION_COL), (int)(rs.getInt(PRODUCT_PRICE_COL)), 0, rs.getString(PRODUCT_IMAGE_COL), imageList, reviews);
 	}
-	public  static  Product getProductAdmin(String productId) throws Exception {
+	public  static  Product getProductAdmin(String productId) throws SQLException, ClassNotFoundException {
 		String query = CreateQuery.getSelectQuery(TABLE_NAME, PRODUCT_ID_COL);
 		Connection con = JDBCUtil.getConnection();
 		PreparedStatement ps = con.prepareStatement(query);
 		ps.setString(1, productId);
 		ResultSet rs = ps.executeQuery();
 		if(!rs.next()){
-			throw new Exception("Invalid product id");
+			throw new SQLException("Invalid product id");
 		}
 		List<String > imageList = getProductImages(productId);
 		List<Review> reviews = ReviewDao.getReviews(productId);

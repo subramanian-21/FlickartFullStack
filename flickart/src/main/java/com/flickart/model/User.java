@@ -10,6 +10,7 @@ public class User {
 	private String email;
 	private String password;
 	private String profilePhoto;
+	private Cart cart;
 	public String getUserId() {
 		return userId;
 	}
@@ -40,13 +41,16 @@ public class User {
 	public void setProfilePhoto(String profilePhoto) {
 		this.profilePhoto = profilePhoto;
 	}
-	public User(String userId, String userName, String email, String password, String profilePhoto) {
+
+
+	public User(String userId, String userName, String email, String password, String profilePhoto, Cart cart) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.email = email;
 		this.password = password;
 		this.profilePhoto = profilePhoto;
+		this.cart = cart;
 	}
 	
 	

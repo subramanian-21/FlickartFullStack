@@ -35,9 +35,7 @@ public class UserServlet extends HttpServlet {
             }else {
                 throw new ServletException("Invalid path");
             }
-            resp.setStatus(200);
-            resp.getWriter().print(JsonUtil.getJsonString(true, map));
-            resp.flushBuffer();
+            JsonUtil.sendJsonResponse(200, resp, map);
         }catch (Exception e){
             JsonUtil.showError(resp, e);
         }
@@ -48,9 +46,7 @@ public class UserServlet extends HttpServlet {
             String authHeader = req.getHeader("Authorization");
             String accessToken = authHeader.substring(7);
             AdminUserController.getUser(accessToken);
-            resp.setStatus(200);
-            resp.getWriter().print(JsonUtil.getJsonString(true, UserController.getUser(accessToken)));
-            resp.flushBuffer();
+            JsonUtil.sendJsonResponse(200, resp, UserController.getUser(accessToken));
         }catch (Exception e) {
             JsonUtil.showError(resp, e);
         }

@@ -44,6 +44,6 @@ public class JwtFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         res.getWriter().write(JsonUtil.getJsonString(false, "Invalid JWT token"));
-        res.flushBuffer();
+        res.getWriter().flush();
     }
 }

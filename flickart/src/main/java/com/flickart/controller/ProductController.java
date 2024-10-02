@@ -48,6 +48,22 @@ public class ProductController {
 		map.put("products", ProductDao.getAllProducts(limit, offset));
 		return map;
 	}
+
+	public static Map<Object, Object> getAllProductsAdmin(int limit, int offset) throws SQLException, ClassNotFoundException {
+		int totalProductCount = ProductDao.getProductsCount();
+
+		Map<Object, Object> map = new HashMap<>();
+		map.put("limit", limit);
+		map.put("offset", offset);
+		map.put("totalCount", totalProductCount);
+		boolean hasNext = false;
+		if(offset + limit < totalProductCount) {
+			hasNext = true;
+		}
+		map.put("hasNext", hasNext);
+		map.put("products", ProductDao.getAllProductsAdmin(limit, offset));
+		return map;
+	}
 	public static Review addProductReview(String accessToken,Review review) throws Exception {
 		User user = UserController.getUser(accessToken);
 		String uniqueId  = UniqueId.getUniqueId();
