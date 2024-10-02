@@ -4,12 +4,12 @@ import java.util.List;
 public class Cart {
     private String cartId;
     private String userId;
-    private double totalAmount;
+    private float totalAmount;
     private List<CartItem> cartItems;
 
     public Cart() {}
 
-    public Cart(String cartId, String userId, double totalAmount, List<CartItem> cartItems) {
+    public Cart(String cartId, String userId, float totalAmount, List<CartItem> cartItems) {
         this.cartId = cartId;
         this.userId = userId;
         this.totalAmount = totalAmount;

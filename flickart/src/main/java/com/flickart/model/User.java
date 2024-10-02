@@ -6,9 +6,7 @@ import com.google.gson.annotations.Expose;
 
 public class User {
 	private String userId;
-
-	private String userName; 
-
+	private String userName;
 	private String email;
 	private String password;
 	private String profilePhoto;

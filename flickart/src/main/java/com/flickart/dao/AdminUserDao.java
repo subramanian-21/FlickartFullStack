@@ -4,7 +4,6 @@ import com.flickart.model.AdminUser;
 import com.flickart.util.CreateQuery;
 import com.flickart.util.HashPassword;
 import com.flickart.util.JDBCUtil;
-
 import java.sql.Connection;
 
 import java.sql.PreparedStatement;

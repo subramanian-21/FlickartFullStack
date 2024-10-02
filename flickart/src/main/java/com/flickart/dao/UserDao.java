@@ -22,9 +22,9 @@ public class UserDao {
     private static final String PROFILE_PHOTO_COL = "profilePhoto";
    
 
-    public static User createUser(String userName, String email, String password, String profilePhoto) throws ClassNotFoundException, SQLException {
+    public static User createUser(String userName, String email, String password, String profilePhoto) throws Exception {
     	if(!validateColumn(EMAIL_COL, email)) {
-    		return null;
+    		throw new Exception("Username already exists");
     	}
     	String userIdString = UniqueId.getUniqueId();
         String hashedPassword = HashPassword.hashPassword(password);
@@ -72,19 +72,22 @@ public class UserDao {
     }
 
 
-    public static boolean loginUser(String email, String password) throws ClassNotFoundException, SQLException {
+    public static User validateUser(String email, String password) throws ClassNotFoundException, SQLException {
         String query = CreateQuery.getSelectQuery(TABLE_NAME, EMAIL_COL);
         Connection con = JDBCUtil.getConnection();
         PreparedStatement ps = con.prepareStatement(query);
         ps.setString(1, email);
         
         ResultSet rs = ps.executeQuery();
+
         if (rs.next()) {
             String storedHashedPassword = rs.getString(PASSWORD_COL);
-       
-            return HashPassword.validatePassword(password, storedHashedPassword);
+            if(HashPassword.validatePassword(password, storedHashedPassword)){
+                return new User(rs.getString("userId"), rs.getString("userName"), rs.getString("email"), rs.getString("password"), rs.getString("profilePhoto"));
+            }
+
         }
-        return false; 
+        return null;
     }
 
     public static User getUserById(String userId) throws ClassNotFoundException, SQLException {

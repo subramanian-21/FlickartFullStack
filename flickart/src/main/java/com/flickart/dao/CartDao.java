@@ -1,68 +1,80 @@
 package com.flickart.dao;
 
+import com.flickart.model.Cart;
+import com.flickart.model.CartItem;
+import com.flickart.model.Product;
+import com.flickart.util.CreateQuery;
+import com.flickart.util.JDBCUtil;
+import com.flickart.util.UniqueId;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import com.flickart.util.JDBCUtil;
-import com.flickart.util.UniqueId;
+import java.util.List;
 
 public class CartDao {
-    public static boolean addToCart(String userId, String productId, int quantity, int price) throws SQLException, ClassNotFoundException {
-        Connection con = JDBCUtil.getConnection();
-        
-        String cartId = getOrCreateCart(con, userId);
-
-        String query = "INSERT INTO CartItems (cartId, productId, quantity, price) VALUES (?, ?, ?, ?)";
-        PreparedStatement ps = con.prepareStatement(query);
-        ps.setString(1, cartId);
-        ps.setString(2, productId);
-        ps.setInt(3, quantity);
-        ps.setDouble(4, price);
-
-        ps.executeUpdate();
-
-        // Step 3: Update cart total
-        updateCartTotal(con, cartId);
-
+    private static final String TABLE_NAME = "Cart";
+    private static final String USER_ID_COL = "userId";
+    private static final String TOTAL_AMOUNT_COL = "totalAmount";
+    private static final String CART_ID_COL = "cartId";
+    public static boolean addToCart(String userId, Product product, int productCount) throws SQLException, ClassNotFoundException {
+        String uniqueCartId = UniqueId.getUniqueId();
+        Connection connection = JDBCUtil.getConnection();
+        String query = CreateQuery.getInsertQuery(TABLE_NAME, CART_ID_COL, USER_ID_COL, TOTAL_AMOUNT_COL);
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, uniqueCartId);
+        preparedStatement.setString(2, userId);
+        preparedStatement.setFloat(3, product.getPrice() * productCount);
+        preparedStatement.executeUpdate();
+        CartItemsDao.addToCart(userId, product, productCount);
         return true;
     }
+    private static String getCartId(String userId) throws SQLException, ClassNotFoundException {
+        Connection connection = JDBCUtil.getConnection();
+        PreparedStatement ps = connection.prepareStatement("select cartId from " + TABLE_NAME + " where userId = ?");
+        ps.setString(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getString(CART_ID_COL);
+        }
+        throw new SQLException("Can't find cart id");
+    }
 
-    private static String getOrCreateCart(Connection con, String userId) throws SQLException {
-        String query = "SELECT cartId FROM Cart WHERE userId = ?";
-        PreparedStatement ps = con.prepareStatement(query);
+    public static Cart getCart(String userId) throws SQLException, ClassNotFoundException {
+        String cartId = getCartId(userId);
+        if(cartId == null) {
+            throw new SQLException("Invalid user id");
+        }
+        List<CartItem> cartItems = CartItemsDao.getCartItems(cartId);
+        Connection con = JDBCUtil.getConnection();
+        PreparedStatement ps = con.prepareStatement("select * from " + TABLE_NAME + " where userId = ?");
         ps.setString(1, userId);
         ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            return rs.getString("cartId"); 
-            
-        }
-
-        String newCartId = UniqueId.getUniqueId();
-        String insertCartQuery = "INSERT INTO Cart (cartId, userId) VALUES (?, ?)";
-        PreparedStatement insertPs = con.prepareStatement(insertCartQuery);
-        insertPs.setString(1, newCartId);
-        insertPs.setString(2, userId);
-        insertPs.executeUpdate();
-
-        return newCartId;
+       if(rs.next()){
+           return new Cart(cartId, userId, rs.getFloat(TOTAL_AMOUNT_COL), cartItems);
+       }
+       return null;
     }
-
-    private static void updateCartTotal(Connection con, String cartId) throws SQLException {
-        String query = "SELECT SUM(quantity * price) FROM CartItems WHERE cartId = ?";
-        PreparedStatement ps = con.prepareStatement(query);
-        ps.setString(1, cartId);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            double totalAmount = rs.getDouble(1);
-            String updateCartQuery = "UPDATE Cart SET totalAmount = ? WHERE cartId = ?";
-            PreparedStatement updatePs = con.prepareStatement(updateCartQuery);
-            updatePs.setDouble(1, totalAmount);
-            updatePs.setString(2, cartId);
-            updatePs.executeUpdate();
-        }
+    public static boolean removeFromCart(String userId,int quantity, Product product) throws SQLException, ClassNotFoundException{
+        String cartId = getCartId(userId);
+        CartItemsDao.removeFromCart(userId, product.getProductId());
+        updateCartTotalPrice(cartId, -(quantity*product.getPrice()));
+        return true;
+    }
+    public static  boolean updateCartTotalPrice(String userId, float productPrice) throws SQLException, ClassNotFoundException {
+        Connection connection  = JDBCUtil.getConnection();
+        String query = "update "+TABLE_NAME+" set totalAmount = totalAmount + ? where userId = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setFloat(1, productPrice);
+        preparedStatement.setString(2, userId);
+        preparedStatement.executeUpdate();
+        return true;
+    }
+    public static boolean updateProductCount(String userId,int prevQuantity,int changeInAmount, Product product) throws SQLException, ClassNotFoundException{
+        String cartId = getCartId(userId);
+        CartItemsDao.updateProductCount(cartId, product.getProductId(), prevQuantity+changeInAmount);
+        updateCartTotalPrice(cartId, prevQuantity + (changeInAmount *product.getPrice()));
+        return true;
     }
 }

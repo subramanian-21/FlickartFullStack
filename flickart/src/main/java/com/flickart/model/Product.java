@@ -10,6 +10,16 @@ public class Product {
 	private int stockCount;
 	private String image;
 	private List<String> images;
+	private List<Review> reviews;
+
+	public List<Review> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(List<Review> reviews) {
+		this.reviews = reviews;
+	}
+
 	public String getProductId() {
 		return productId;
 	}
@@ -46,7 +56,7 @@ public class Product {
 	public void setPrice(int price) {
 		this.price = price;
 	}
-	public Product(String productId, String productName, String productDescription, int price, int stockCount, String image, List<String> images) {
+	public Product(String productId, String productName, String productDescription, int price, int stockCount, String image, List<String> images, List<Review> reviews) {
 		super();
 		this.productId = productId;
 		this.productName = productName;
@@ -55,15 +65,7 @@ public class Product {
 		this.stockCount = stockCount;
 		this.image = image;
 		this.images = images;
-	}
-	public Product(String productId, String productName, String productDescription, int price, int stockCount, String image) {
-		super();
-		this.productId = productId;
-		this.productName = productName;
-		this.productDescription = productDescription;
-		this.price = price;
-		this.stockCount = stockCount;
-		this.image = image;
+		this.reviews = reviews;
 	}
 	public int getStockCount() {
 		return stockCount;

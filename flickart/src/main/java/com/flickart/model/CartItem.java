@@ -5,11 +5,11 @@ public class CartItem {
     private String cartId;
     private String productId;
     private int quantity;
-    private double price;
+    private float price;
 
     public CartItem() {}
 
-    public CartItem(String cartItemId, String cartId, String productId, int quantity, double price) {
+    public CartItem(String cartItemId, String cartId, String productId, int quantity, float price) {
         this.cartItemId = cartItemId;
         this.cartId = cartId;
         this.productId = productId;

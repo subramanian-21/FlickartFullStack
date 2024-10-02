@@ -1,12 +1,16 @@
 package com.flickart.controller;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.flickart.dao.ProductDao;
+import com.flickart.dao.ReviewDao;
+import com.flickart.dao.UserDao;
 import com.flickart.model.Product;
+import com.flickart.model.Review;
+import com.flickart.model.User;
+import com.flickart.util.UniqueId;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -43,5 +47,13 @@ public class ProductController {
 		map.put("hasNext", hasNext);
 		map.put("products", ProductDao.getAllProducts(limit, offset));
 		return map;
+	}
+	public static Review addProductReview(String accessToken,Review review) throws Exception {
+		User user = UserController.getUser(accessToken);
+		String uniqueId  = UniqueId.getUniqueId();
+		review.setUserId(user.getUserId());
+		review.setReviewId(uniqueId);
+		ReviewDao.addReview(review);
+		return review;
 	}
 }

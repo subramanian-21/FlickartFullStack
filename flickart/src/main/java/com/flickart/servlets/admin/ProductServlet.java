@@ -7,6 +7,7 @@ import com.flickart.dao.ProductDao;
 import com.flickart.model.Product;
 import com.flickart.util.JsonUtil;
 import com.google.gson.Gson;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class ProductServlet extends HttpServlet{
 			int rowCount = 0;
 			if(path.equals("/add")) {
 				JsonObject jsonObject = gson.fromJson(req.getReader(), JsonObject.class);
-				JsonObject productJson = jsonObject.getAsJsonObject("products");
+				JsonObject productJson = jsonObject.getAsJsonObject("product");
 				Product product = gson.fromJson(productJson, Product.class);
 		        rowCount = ProductController.addProduct(product);
 			}else if(path.equals("/addAll")){
@@ -41,14 +42,7 @@ public class ProductServlet extends HttpServlet{
 		    res.flushBuffer();
 	         
 		}catch (Exception e) {
-			try {
-				 res.setStatus(400);
-		         res.getWriter().print(JsonUtil.getJsonString(false, e.getMessage()));
-		         res.flushBuffer();
-			} catch (Exception e2) {
-				e.printStackTrace();
-				
-			}
+			JsonUtil.showError(res, e);
 		}
 	}
 		@Override
@@ -63,14 +57,7 @@ public class ProductServlet extends HttpServlet{
 				res.getWriter().print(JsonUtil.getJsonString(true, "updated "+productId));
 				res.flushBuffer();
 			} catch (Exception e) {
-				try {
-					res.setStatus(400);
-					res.getWriter().print(JsonUtil.getJsonString(false, e.getMessage()));
-					res.flushBuffer();
-
-				} catch (Exception e2) {
-					e.printStackTrace();
-				}
+				JsonUtil.showError(res, e);
 			}
 		}
 	@Override
@@ -83,22 +70,31 @@ public class ProductServlet extends HttpServlet{
 					int offset = Integer.parseInt(req.getParameter("offset"));
 
 					res.setStatus(200);
-					res.getWriter().print(JsonUtil.getJsonString(true, ProductDao.getAllProducts(limit, offset)));
+					res.getWriter().print(JsonUtil.getJsonString(true, ProductController.getAllProducts(limit, offset)));
 					res.flushBuffer();
 				}else {
 					String productId = path.substring(1);
 					res.setStatus(200);
-					res.getWriter().print(JsonUtil.getJsonString(true, ProductDao.getProduct(productId)));
+					res.getWriter().print(JsonUtil.getJsonString(true, ProductDao.getProductAdmin(productId)));
 					res.flushBuffer();
 				}
 			} catch (Exception e) {
-				try {
-					res.setStatus(400);
-					res.getWriter().print(JsonUtil.getJsonString(false, e.getMessage()));
-					res.flushBuffer();
-				} catch (Exception e2) {
-					e.printStackTrace();
-				}
+				JsonUtil.showError(res, e);
 			}
 	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		try{
+			String path = req.getPathInfo();
+			String productId = path.substring(1);
+			ProductDao.deleteProduct(productId);
+			res.setStatus(200);
+			res.getWriter().print(JsonUtil.getJsonString(true, "deleted "+productId));
+			res.flushBuffer();
+		}catch(Exception e) {
+			JsonUtil.showError(res, e);
+		}
+	}
+
 }
