@@ -1,16 +1,35 @@
 import { createContext } from "react";
 import { useState } from "react";
-import useFetchData from "./customHooks/useFetchData";
+import useGetProducts from "./customHooks/useGetProducts";
 
-const DataContext = createContext({})
+const DataContext = createContext({});
 
-export const DataProvider = ({children})=>{
-    const [searchText,setSearchText] = useState("")
-    const apiData = useFetchData("https://dummyjson.com/products?limit=100")
-    const allDataCategory = apiData.map((k) => k.category);
-    const dataCategory = allDataCategory.filter(
-      (k, i) => allDataCategory.indexOf(k) === i
-    );
-    return(<DataContext.Provider value={{searchText,setSearchText,apiData,dataCategory}}>{children}</DataContext.Provider>)
-}
-export default DataContext
+export const DataProvider = ({ children }) => {
+  const [searchText, setSearchText] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const { loading, products, categories, error } = useGetProducts(
+    limit,
+    offset,
+    searchText
+  );
+  return (
+    <DataContext.Provider
+      value={{
+        searchText,
+        setSearchText,
+        loading,
+        products,
+        categories,
+        error,
+        offset,
+        setOffset,
+        limit,
+        setLimit,
+      }}
+    >
+      {children}
+    </DataContext.Provider>
+  );
+};
+export default DataContext;

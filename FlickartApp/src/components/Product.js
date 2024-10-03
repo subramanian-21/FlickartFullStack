@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 const Product = ({ data }) => {
   return (
     <Link to={"/product/" + data.id}>
-      <div className="w-[250px] h-[450px] rounded-lg border border-1 border-gray-200 bg-gray-100 hover:bg-gray-200">
+      <div className="w-[300px] h-[450px] rounded-lg border border-1 border-gray-200 bg-gray-100 hover:bg-gray-200">
         <img
           src={data.thumbnail}
-          className="w-[250px] h-[250px] rounded-t-lg bg-slate-300"
+          className="w-[300px] h-[250px] rounded-t-lg bg-slate-300"
           alt={data.name}
         />
         <div className="flex flex-col p-2">
