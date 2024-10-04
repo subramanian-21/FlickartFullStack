@@ -2,6 +2,7 @@ package com.flickart.controller;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.flickart.dao.CategoriesDao;
@@ -40,6 +41,13 @@ public class ProductController {
 		return map;
 	}
 
+	public static Map<Object, Object> getAllProductsByCategory(int limit, int offset, String category) throws SQLException, ClassNotFoundException {
+		Map<Object, Object> map = ProductDao.getProductsByCategory(limit, offset, category);
+		map.put("categories", CategoriesDao.getAllCategories());
+		return map;
+	}
+
+
 	public static Map<Object, Object> getAllProductsAdmin(int limit, int offset, String searchString) throws SQLException, ClassNotFoundException {
 		int totalProductCount = ProductDao.getProductsCount(searchString);
 
@@ -65,4 +73,5 @@ public class ProductController {
 		ReviewDao.addReview(review);
 		return review;
 	}
+
 }

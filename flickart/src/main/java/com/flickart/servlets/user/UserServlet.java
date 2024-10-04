@@ -2,7 +2,6 @@ package com.flickart.servlets.user;
 
 import com.flickart.controller.AdminUserController;
 import com.flickart.controller.UserController;
-import com.flickart.model.AdminUser;
 import com.flickart.model.User;
 import com.flickart.util.JsonUtil;
 import com.google.gson.Gson;
@@ -26,6 +25,8 @@ public class UserServlet extends HttpServlet {
         try{
             if(path.equals("/login")){
                 User user = gson.fromJson(req.getReader(), User.class);
+                System.out.println(user.getEmail());
+                System.out.println(user.getPassword());
                 map = UserController.login(user.getEmail(),user.getPassword());
             }else if(path.equals("/signup")){
                  User user = gson.fromJson(req.getReader(), User.class);

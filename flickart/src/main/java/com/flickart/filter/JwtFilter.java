@@ -21,18 +21,17 @@ public class JwtFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         String authHeader = req.getHeader("Authorization");
         String requestURI = req.getRequestURI();
+
+        System.out.println(requestURI);
         List<String> unblockedPaths = new ArrayList<>();
         unblockedPaths.add(path+"/api/admin/login");
-        unblockedPaths.add(path+"/api/user/products");
         unblockedPaths.add(path+"/api/user/login");
         unblockedPaths.add(path+"/api/user/signup");
-        unblockedPaths.add(path+"/api/user/products/getAll");
-        
-        if (unblockedPaths.contains(requestURI)) {
+
+        if (unblockedPaths.contains(requestURI) || requestURI.startsWith(path+"/api/user/products")) {
             chain.doFilter(request, response); 
             return;
         }
-
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if(JwtUtil.validateToken(token) != null) {

@@ -18,27 +18,73 @@ public class CategoriesDao {
 
 
     public static List<ProductCategory> getAllCategories() throws SQLException , ClassNotFoundException{
-        List<ProductCategory> list = new ArrayList<>();
-        Connection connection = JDBCUtil.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
-        while (resultSet.next()) {
-            list.add(new ProductCategory(resultSet.getString(CATEGORY_COL), resultSet.getString(CATEGORY_NAME_COL), resultSet.getString(CATEGORY_IMAGE_COL)));
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            List<ProductCategory> list = new ArrayList<>();
+            connection = JDBCUtil.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
+            while (resultSet.next()) {
+                list.add(new ProductCategory(resultSet.getString(CATEGORY_COL), resultSet.getString(CATEGORY_NAME_COL), resultSet.getString(CATEGORY_IMAGE_COL)));
+            }
+            return list;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e.getMessage());
         }
-        return list;
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(e.getMessage());
+        }finally {
+            if(resultSet != null){
+                resultSet.close();
+            }
+            if(statement != null) {
+                statement.close();
+            }
+            if(connection != null) {
+                connection.close();
+            }
+        }
+
     }
     public  static  List<ProductCategory> searchByCategory(String category) throws SQLException , ClassNotFoundException{
-        if(category == null || category.isEmpty()){
-            return getAllCategories();
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            if(category == null || category.isEmpty()){
+                return getAllCategories();
+            }
+            List<ProductCategory> list = new ArrayList<>();
+            category = category.toLowerCase();
+            connection = JDBCUtil.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME +" where lower(categoryName) like '%"+category+"%'");
+            while (resultSet.next()) {
+                list.add(new ProductCategory(resultSet.getString(CATEGORY_COL), resultSet.getString(CATEGORY_NAME_COL), resultSet.getString(CATEGORY_IMAGE_COL)));
+            }
+            return list;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e.getMessage());
         }
-        List<ProductCategory> list = new ArrayList<>();
-        category = category.toLowerCase();
-        Connection connection = JDBCUtil.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME +" where lower(categoryName) like '%"+category+"%'");
-        while (resultSet.next()) {
-            list.add(new ProductCategory(resultSet.getString(CATEGORY_COL), resultSet.getString(CATEGORY_NAME_COL), resultSet.getString(CATEGORY_IMAGE_COL)));
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(e.getMessage());
+        }finally {
+            if(resultSet != null){
+                resultSet.close();
+            }
+            if(statement != null) {
+                statement.close();
+            }
+            if(connection != null) {
+                connection.close();
+            }
         }
-        return list;
+
     }
 }

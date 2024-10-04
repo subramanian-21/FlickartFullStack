@@ -19,9 +19,14 @@ public class ProductServlet extends HttpServlet {
                 int limit = Integer.parseInt(req.getParameter("limit"));
                 int offset = Integer.parseInt(req.getParameter("offset"));
                 String search = req.getParameter("search");
-
-                JsonUtil.sendJsonResponse(200, res, ProductController.getAllProducts(limit, offset, search));
-            }else {
+                String category = req.getParameter("category");
+                if(category != null && !category.isEmpty()) {
+                    JsonUtil.sendJsonResponse(200, res, ProductController.getAllProductsByCategory(limit, offset, category));
+                }else {
+                    JsonUtil.sendJsonResponse(200, res, ProductController.getAllProducts(limit, offset, search));
+                }
+            }
+            else {
                 String productId = path.substring(1);
                 JsonUtil.sendJsonResponse(200, res,  ProductDao.getProduct(productId));
             }

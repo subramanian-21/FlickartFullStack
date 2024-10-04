@@ -4,28 +4,20 @@ import { FaStar } from "react-icons/fa";
 import { useState } from "react";
 import { addToCart } from "../utils/redux/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { getProduct } from "../utils/api/getProducts";
+import Reviews from "./products/Reviews";
 const ProductBody = () => {
   const [image,setImage] = useState("")
   const cartItems = useSelector(c=>c.cart.products)
   const [product,setProduct] = useState(null)
   const dispatch = useDispatch()
   const [cart, setCart] = useState("Add to Cart");
-  const params = useParams();
-  const proId = params.id;
-
+  const {productId} = useParams();
+;
   async function fetchData() {
-    
-    const res = await fetch("https://dummyjson.com/products/" + proId);
-    const json = await res.json();
-    
-    const present = cartItems.find(k=>k.id === json.id)
-    if(present){
-      setCart("Added to Cart")
-    }else{
-      setCart("Add to Cart")
-    }
-    setImage(json.thumbnail)
-    setProduct(json);
+    const data = await getProduct(productId);
+    console.log(data.response);
+    setProduct(data.response);
   }
   const handleAddCart=(payload)=>{
     setCart('Added to Cart')
@@ -33,7 +25,7 @@ const ProductBody = () => {
   }
   useEffect(()=>{
     fetchData()
-  },[proId,cartItems])
+  },[productId, cartItems])
 
   if (!product) {
     return <></>;
@@ -44,10 +36,10 @@ const ProductBody = () => {
  
   return (
     <div>
-      <div className="w-full min-h-[80vh] flex flex-col md:flex-row">
+      <div className="w-full flex flex-col md:flex-row text-white">
         <div className="md:w-1/3 gap-2 p-2 flex">
           <div className="">
-            {product.images?product.images.map((k,i) => (
+            {product.images?.length > 0  ?product.images.map((k,i) => (
               <img
               onMouseEnter={()=>changeImage(k)}
               key={i}
@@ -58,13 +50,13 @@ const ProductBody = () => {
             )):""}
           </div>
           <div className=" m-2">
-            <img src={image} alt="" />
+            <img src={product.image} alt="" />
           </div>
         </div>
         <div className="md:w-2/3 p-5">
-          <div className="text-2xl">{product.title}</div>
+          <div className="text-2xl">{product.productName}</div>
           <div className="font-bold text-xl">{product.brand}</div>
-          <div className="texl-xl">{product.description}</div>
+          <div className="texl-xl">{product.productDescription}</div>
           <div
             className={
               product.rating >= 4
@@ -77,17 +69,17 @@ const ProductBody = () => {
           </div>
           <div className="h-[1px] border border-1 border-gray-700"></div>
 
-          <div className="text-gray-500 text-sm line-through">
+          <div className="text-gray-300 text-sm line-through">
             {Math.floor(
-              product.price + (product.discountPercentage * product.price) / 100
+              product.price + (product.discount * product.price) / 100
             )}{" "}
-            $
+            ₹
           </div>
           <div className="text-2xl gap-4 flex items-center">
             <div className="text-4xl text-red-400">
-              -{product.discountPercentage}%
+              -{product.discount}%
             </div>
-            {product.price} ${" "}
+            {product.price} ₹{" "}
           </div>
 
           <div className="">(Inclusive All taxes)</div>
@@ -107,6 +99,7 @@ const ProductBody = () => {
           </button>
         </div>
       </div>
+            <Reviews />
     </div>
   );
 };

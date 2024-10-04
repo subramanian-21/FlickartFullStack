@@ -19,15 +19,33 @@ public class CartDao {
     private static final String TOTAL_AMOUNT_COL = "totalAmount";
     private static final String CART_ID_COL = "cartId";
     public static Cart createCart(String userId) throws SQLException, ClassNotFoundException {
-        String uniqueCartId = UniqueId.getUniqueId();
-        Connection connection = JDBCUtil.getConnection();
-        String query = CreateQuery.getInsertQuery(TABLE_NAME, CART_ID_COL, USER_ID_COL, TOTAL_AMOUNT_COL);
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, uniqueCartId);
-        preparedStatement.setString(2, userId);
-        preparedStatement.setFloat(3, 0);
-        preparedStatement.executeUpdate();
-        return new Cart(uniqueCartId, userId, 0, new ArrayList<>());
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            String uniqueCartId = UniqueId.getUniqueId();
+            connection = JDBCUtil.getConnection();
+            String query = CreateQuery.getInsertQuery(TABLE_NAME, CART_ID_COL, USER_ID_COL, TOTAL_AMOUNT_COL);
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, uniqueCartId);
+            preparedStatement.setString(2, userId);
+            preparedStatement.setFloat(3, 0);
+            preparedStatement.executeUpdate();
+            return new Cart(uniqueCartId, userId, 0, new ArrayList<>());
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e.getMessage());
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(e.getMessage());
+        }finally {
+            if(preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if(connection != null) {
+                connection.close();
+            }
+        }
     }
     public static boolean addToCart(String cartId, String productId) throws SQLException, ClassNotFoundException {
         Product product = ProductDao.getProductAdmin(productId);
@@ -36,30 +54,75 @@ public class CartDao {
         return true;
     }
     private static String getCartId(String userId) throws SQLException, ClassNotFoundException {
-        Connection connection = JDBCUtil.getConnection();
-        PreparedStatement ps = connection.prepareStatement("select cartId from " + TABLE_NAME + " where userId = ?");
-        ps.setString(1, userId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getString(CART_ID_COL);
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = JDBCUtil.getConnection();
+            preparedStatement = connection.prepareStatement("select cartId from " + TABLE_NAME + " where userId = ?");
+            preparedStatement.setString(1, userId);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString(CART_ID_COL);
+            }
+            throw new SQLException("Can't find cart id");
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e.getMessage());
         }
-        throw new SQLException("Can't find cart id");
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(e.getMessage());
+        }finally {
+            if(resultSet != null){
+                resultSet.close();
+            }
+            if(preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if(connection != null) {
+                connection.close();
+            }
+        }
     }
 
     public static Cart getCart(String cartId) throws SQLException, ClassNotFoundException {
-        if(cartId == null) {
-            throw new SQLException("Invalid cart id");
-        }
-        List<CartItem> cartItems = CartItemsDao.getCartItems(cartId);
-        Connection con = JDBCUtil.getConnection();
-        PreparedStatement ps = con.prepareStatement("select * from " + TABLE_NAME + " where cartId = ?");
-        ps.setString(1, cartId);
-        ResultSet rs = ps.executeQuery();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            if(cartId == null) {
+                throw new SQLException("Invalid cart id");
+            }
+            List<CartItem> cartItems = CartItemsDao.getCartItems(cartId);
+            connection = JDBCUtil.getConnection();
+            preparedStatement = connection.prepareStatement("select * from " + TABLE_NAME + " where cartId = ?");
+            preparedStatement.setString(1, cartId);
+            resultSet = preparedStatement.executeQuery();
 
-       if(rs.next()){
-           return new Cart(cartId, rs.getString(USER_ID_COL), rs.getFloat(TOTAL_AMOUNT_COL), cartItems);
-       }
-       return null;
+            if(resultSet.next()){
+                return new Cart(cartId, resultSet.getString(USER_ID_COL), resultSet.getFloat(TOTAL_AMOUNT_COL), cartItems);
+            }
+            return null;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e.getMessage());
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(e.getMessage());
+        }
+        finally {
+            if(resultSet != null){
+                resultSet.close();
+            }
+            if(preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if(connection != null) {
+                connection.close();
+            }
+        }
     }
     public static boolean removeFromCart(String cartId,int quantity, Product product) throws SQLException, ClassNotFoundException{
         CartItemsDao.removeFromCart(cartId, product.getProductId());
@@ -72,13 +135,32 @@ public class CartDao {
         return true;
     }
     public static  boolean updateCartTotalPrice(String cartId, double productPrice) throws SQLException, ClassNotFoundException {
-        Connection connection  = JDBCUtil.getConnection();
-        String query = "update "+TABLE_NAME+" set totalAmount = totalAmount + ? where cartId = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setDouble(1, productPrice);
-        preparedStatement.setString(2, cartId);
-        preparedStatement.executeUpdate();
-        return true;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection  = JDBCUtil.getConnection();
+            String query = "update "+TABLE_NAME+" set totalAmount = totalAmount + ? where cartId = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setDouble(1, productPrice);
+            preparedStatement.setString(2, cartId);
+            preparedStatement.executeUpdate();
+            return true;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e.getMessage());
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new ClassNotFoundException(e.getMessage());
+        }finally {
+            if(preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if(connection != null) {
+                connection.close();
+            }
+        }
     }
     public static boolean updateProductCount(String cartId,int count, String productId) throws SQLException, ClassNotFoundException{
         Product product = ProductDao.getProductAdmin(productId);

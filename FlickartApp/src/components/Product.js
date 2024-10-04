@@ -4,42 +4,39 @@ import { Link } from "react-router-dom";
 
 const Product = ({ data }) => {
   return (
-    <Link to={"/product/" + data.id}>
-      <div className="w-[300px] h-[450px] rounded-lg border border-1 border-gray-200 bg-gray-100 hover:bg-gray-200">
+    <Link to={"/product/" + data.productId}>
+      <div className="w-[300px] h-[450px] rounded-lg border border-1 border-zinc-600 text-gray-200 bg-zinc-700 hover:bg-zinc-900">
         <img
-          src={data.thumbnail}
-          className="w-[300px] h-[250px] rounded-t-lg bg-slate-300"
-          alt={data.name}
+          src={data?.image}
+          className="w-[300px] h-[250px] rounded-t-lg bg-gray-500"
+          alt={data?.productName}
         />
         <div className="flex flex-col p-2">
           <div className="font-bold flex justify-center m-2">{data.brand}</div>
           <div className="text-lg flex justify-center">
-            {data.title.length > 22
-              ? data.title.slice(0, 22) + "..."
-              : data.title}
+            {data?.productName?.length > 22
+              ? data.productName.slice(0, 22) + "..."
+              : data.productName}
           </div>
           <div className="text-md flex justify-center">
-            {data.description.length > 45
-              ? data.description.slice(0, 45) + "..."
-              : data.description}
+            {data?.productDescription?.length > 45
+              ? data?.productDescription?.slice(0, 45) + "..."
+              : data?.productDescription}
           </div>
           <div className="flex justify-center items-end gap-2">
-            <div className="flex  text-xl font-semibold">{data.price} $</div>
+            <div className="flex  text-xl font-semibold">{data.price} ₹</div>
             <div className="text-gray-500 text-sm line-through">
-              {Math.floor(
-                data.price + (data.discountPercentage * data.price) / 100
-              )}{" "}
-              $
+              {Math.floor(data?.price + (data?.discount * data?.price) / 100)} ₹
             </div>
             <div
               className={
-                data.rating >= 4
+                data?.rating >= 4
                   ? "bg-green-500 text-white font-bold text-lg p-1 flex items-center"
                   : "bg-red-500 text-white font-bold text-lg p-1 flex items-center"
               }
             >
               <FaStar></FaStar>
-              {data.rating}
+              {data?.rating}
             </div>
           </div>
         </div>
@@ -47,9 +44,16 @@ const Product = ({ data }) => {
     </Link>
   );
 };
-export const discountedLabel = (Component)=>{
-  return(props)=>{
-    return(<div><div className="absolute px-2 py-1 bg-zinc-800 text-white ml-[-5px] ">Best Deal</div><Component {...props}></Component></div>)
-  }
-}
+export const discountedLabel = (Component) => {
+  return (props) => {
+    return (
+      <div>
+        <div className="absolute px-2 py-1 bg-yellow-500 rounded-lg text-white ml-[5px] mt-[5px] ">
+          Best Deal
+        </div>
+        <Component {...props}></Component>
+      </div>
+    );
+  };
+};
 export default Product;

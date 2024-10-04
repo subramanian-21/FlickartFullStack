@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import getProducts from "../api/getProducts";
+import { getProductsByCategory } from "../api/getProducts";
 
-export default function useGetProducts(limit, offset, searchText) {
+export default function useGetCategoryProducts(limit, offset, category) {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -10,24 +10,28 @@ export default function useGetProducts(limit, offset, searchText) {
 
   const fetchData = useCallback(
     async () => {
-        setLoading(true);
+        if(category != ""){
+            setLoading(true);
         try {
-          const response = await getProducts(limit, offset, searchText);
-          setProducts((pro)=> [...pro,...response.response?.products]);
-          setCategories(response?.response?.categories);
+          const response = await getProductsByCategory(limit, offset, category);
+        setProducts((pro)=> [...pro,...response.response?.products]);
           setLoading(false);
           setHasNext(response?.response?.hasNext);
         } catch (error) {
           setError(error);
           setLoading(false);
         }
+        }else {
+            setProducts([])
+        }
+        
     },
-    [limit, offset, searchText]
+    [limit, offset, category]
   );
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  return { loading, products, categories, hasNext ,error };
+  return { loading, products,categories, hasNext ,error };
 }

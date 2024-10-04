@@ -15,7 +15,7 @@ export default function Login() {
     const login =async () =>{
         if(inputData.email && inputData.password ) {
             try {
-            const response = await postApi("user/login",inputData);
+            const response = await postApi("/user/login",inputData);
             toast.success("Login successful");
             setAccessToken(response.response.accessToken);
             setRefreshToken(response.response.refreshToken);

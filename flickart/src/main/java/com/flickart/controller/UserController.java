@@ -13,15 +13,16 @@ import java.util.Map;
 
 public class UserController {
 
-    public static Map<Object, Object> login(String email, String password) throws  Exception {
+    public static Map<Object, Object> login(String email, String password) throws  SQLException , ClassNotFoundException{
         User user = UserDao.validateUser(email, password);
-        Map<Object, Object> map = new HashMap<Object, Object>();
         if(user == null){
-            throw new Exception("Invalid email or password");
+            throw new SQLException("Invalid email or password");
         }
+        Map<Object, Object> map = new HashMap<Object, Object>();
+
         map.put("user", user);
         map.put("accessToken", JwtUtil.createAccessToken(email));
-        map.put("refreshToken", JwtUtil.createRefreshToken(password));
+        map.put("refreshToken", JwtUtil.createRefreshToken(email));
 
         return map;
     }
@@ -44,4 +45,5 @@ public class UserController {
         String userEmail = JwtUtil.validateToken(accessToken);
         return UserDao.getUserByEmail(userEmail);
     }
+
 }
