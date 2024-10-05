@@ -1,5 +1,6 @@
 package com.flickart.dao;
 import com.flickart.model.Review;
+import com.flickart.model.User;
 import com.flickart.util.CreateQuery;
 import com.flickart.util.JDBCUtil;
 import com.flickart.util.UniqueId;
@@ -15,6 +16,7 @@ public class ReviewDao {
     private static  String TABLE_NAME = "Reviews";
     private static  String REVIEW_ID_COL = "reviewId";
     private static  String USER_ID_COL = "userId";
+    private static  String USER_NAME_COL = "userName";
     private static  String PRODUCT_ID_COL = "productId";
     private static  String RATING_COL = "rating";
     private static  String COMMENT_COL = "comment";
@@ -23,15 +25,18 @@ public class ReviewDao {
     public static List<Review> getReviews(String productId) throws SQLException, ClassNotFoundException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             List<Review> reviews = new ArrayList<Review>();
             connection = JDBCUtil.getConnection();
             String query = CreateQuery.getSelectQuery(TABLE_NAME, PRODUCT_ID_COL);
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, productId);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
-                reviews.add(new Review(resultSet.getString(REVIEW_ID_COL), resultSet.getString(USER_ID_COL), resultSet.getString(PRODUCT_ID_COL) ,resultSet.getFloat(RATING_COL), resultSet.getString(COMMENT_COL), resultSet.getString(TIMESTAMPS_COL)));
+                User user = UserDao.getUserById(resultSet.getString(USER_ID_COL));
+                reviews.add(new Review(resultSet.getString(REVIEW_ID_COL), resultSet.getString(USER_ID_COL),user, resultSet.getString(PRODUCT_ID_COL) ,resultSet.getFloat(RATING_COL), resultSet.getString(COMMENT_COL), resultSet.getString(TIMESTAMPS_COL)));
             }
             return reviews;
         }
@@ -44,6 +49,9 @@ public class ReviewDao {
             throw new ClassNotFoundException(e.getMessage());
         }
         finally {
+            if(resultSet != null) {
+                resultSet.close();
+            }
             if(preparedStatement != null) {
                 preparedStatement.close();
             }

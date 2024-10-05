@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
-import { useState,useEffect } from "react";
 import React from 'react'
 
 const Home =  () => {

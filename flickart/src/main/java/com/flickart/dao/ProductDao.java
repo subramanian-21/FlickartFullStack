@@ -550,9 +550,11 @@ public class ProductDao {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		try {
-			String query  = "select ratingCount, rating from "+TABLE_NAME + " where productId = "+productId;
+			if(rating <= 0 || rating > 5) throw  new SQLException("Invalid rating");
+			String query  = "select ratingCount, rating from "+TABLE_NAME + " where productId = ?";
 			connection = JDBCUtil.getConnection();
 			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, productId);
 			resultSet = preparedStatement.executeQuery();
 
 			if(resultSet.next()) {
@@ -561,11 +563,12 @@ public class ProductDao {
 
 				double totalTemp = productRating * ratingCount;
 				double totalSum = totalTemp + rating;
-				double newRating = totalSum / ratingCount+1;
+				double newRating = totalSum / (ratingCount+1);
 				String ratingQuery = "update "+TABLE_NAME+" set rating=?, ratingCount=? where productId=? ";
 				PreparedStatement ratingPs = connection.prepareStatement(ratingQuery);
 				ratingPs.setDouble(1, newRating);
 				ratingPs.setInt(2, ratingCount+1);
+				ratingPs.setString(3, productId);
 				ratingPs.executeUpdate();
 				return true;
 			}

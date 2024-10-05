@@ -6,6 +6,7 @@ import com.flickart.model.User;
 import com.flickart.util.JwtUtil;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -42,8 +43,27 @@ public class UserController {
     }
     public static User getUser(String accessToken) throws SQLException, ClassNotFoundException {
         Gson gson = new Gson();
-        String userEmail = JwtUtil.validateToken(accessToken);
+        String userEmail = JwtUtil.validateTokenUser(accessToken);
         return UserDao.getUserByEmail(userEmail);
     }
-
+    public static Map<Object, Object> handleRefreshToken(String refreshToken) throws SQLException, ClassNotFoundException {
+        String userEmail = JwtUtil.validateTokenUser(refreshToken);
+        if(userEmail == null){
+            throw new JwtException("Invalid refresh token");
+        }
+        Map<Object, Object> map = new HashMap<>();
+        map.put("user", UserDao.getUserByEmail(userEmail));
+        map.put("accessToken", JwtUtil.createAccessToken(userEmail));
+        map.put("refreshToken", JwtUtil.createRefreshToken(refreshToken));
+        return map;
+    }
+    public static Map<Object, Object> validateUser(String accessToken) throws SQLException, ClassNotFoundException {
+        String userEmail = JwtUtil.validateTokenUser(accessToken);
+        if(userEmail == null){
+            throw new JwtException("Invalid access token");
+        }
+        Map<Object, Object> map = new HashMap<>();
+        map.put("user", UserDao.getUserByEmail(userEmail));
+        return map;
+    }
 }

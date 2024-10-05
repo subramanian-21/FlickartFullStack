@@ -11,9 +11,6 @@ import java.sql.SQLException;
 
 public class AdminUserDao {
 	private static final String TABLE_NAME = "AdminUser";
-	public static void main(String[] args) {
-		System.out.println("password".hashCode());
-	}
 	public static AdminUser validateUser(String email, String password) throws ClassNotFoundException, SQLException{
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -23,7 +20,6 @@ public class AdminUserDao {
 
 			preparedStatement.setString(1, email);
 			preparedStatement.setString(2, HashPassword.hashPassword(password));
-			System.out.println(HashPassword.hashPassword(password));
 			ResultSet rs= preparedStatement.executeQuery();
 			if(rs.next()) {
 				return new AdminUser(rs.getString("username"),rs.getString("email"), rs.getString("password"), rs.getString("role"));

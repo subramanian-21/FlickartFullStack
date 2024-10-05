@@ -27,19 +27,17 @@ public class CorsFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         // Set CORS headers
-        httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Change to your frontend's origin
+        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
         httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         httpResponse.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-        httpResponse.setHeader("Access-Control-Max-Age", "3600"); // Cache the preflight response for 1 hour
+        httpResponse.setHeader("Access-Control-Max-Age", "3600");
 
-        // For pre-flight requests, skip the request chain and return immediately
         if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             return;
         }
         System.out.println("filtering..2");
-        // Continue with the next filter or resource
         chain.doFilter(request, response);
     }
 

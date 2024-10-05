@@ -33,7 +33,9 @@ function App() {
       children: [
         {
           path: "",
-          element: <HomeBody />,
+          element: <Suspense fallback={<Loading/>}>
+          <HomeBody />
+        </Suspense>,
         },
         {
           path: "home",
@@ -47,7 +49,7 @@ function App() {
           path: "product/:productId",
           element:<Suspense fallback={<Loading/>}>
                   <ProductBody />
-              </Suspense>,
+                </Suspense>,
         },
         {
           path: "cart",

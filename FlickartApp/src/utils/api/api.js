@@ -28,7 +28,7 @@ instance.interceptors.response.use(
   async (err) => {
     const originalConfig = err.config;
     
-    if (originalConfig.url !== 'user/login' && err.response) {
+    if (originalConfig.url !== '/user/login' && err.response) {
       if (err.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;
 
@@ -36,7 +36,7 @@ instance.interceptors.response.use(
           const refreshToken = getRefreshToken();
           if (refreshToken) {
 
-            const response = await instance.post('admin/auth/refresh', { refreshToken });
+            const response = await instance.post('/user/refresh', { refreshToken });
             setRefreshToken(response.data.refreshToken);
             setAccessToken(response.data.accessToken);
             

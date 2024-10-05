@@ -28,7 +28,6 @@ public class ProductController {
 		 return productJsonArray.size();
 	}
 	public static int addProduct(Product product) throws ClassNotFoundException, SQLException {
-		System.out.println(product.getImages());
 		ProductDao.addProduct(product);
 		return 1;
 	}

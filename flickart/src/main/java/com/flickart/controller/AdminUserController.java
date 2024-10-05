@@ -10,13 +10,7 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 
 public class AdminUserController {
-	public static void main(String[] args) {
-		try {
-			getUser("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJ1c2VybmFtZVwiOlwic3VicmFtYW5pYW5cIixcImVtYWlsXCI6XCJtZWVuYW1hbmk5NDQ0QGdtYWlsLmNvbVwiLFwicGFzc3dvcmRcIjpcIjEyMTY5ODU3NTVcIixcInJvbGVcIjpcIlNVUEVSX0FETUlOXCJ9IiwiZXhwIjoxNzI3NzY0NTY3fQ.upgSdEeDXda3IXbVCwOLnuIcM6iTzQDS9Yus5vtnYQs");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+
 	public static Map<Object, Object> login(String username, String password) throws Exception {	
 			AdminUser user = AdminUserDao.validateUser(username, password);
 			if(user == null) {
@@ -33,8 +27,7 @@ public class AdminUserController {
 
 		AdminUser user = null;
 		try {
-			System.out.println(JwtUtil.validateToken(accessToken));
-			user = gson.fromJson(JwtUtil.validateToken(accessToken), AdminUser.class);
+			user = gson.fromJson(JwtUtil.validateTokenAdmin(accessToken), AdminUser.class);
 		}catch (Exception e){
 			e.printStackTrace();
 		}

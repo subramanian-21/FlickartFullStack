@@ -176,10 +176,10 @@ public class UserDao {
                 return new User(
                         resultSet.getString(USER_ID_COL),
                         resultSet.getString(USER_NAME_COL),
-                        resultSet.getString(EMAIL_COL),
-                        "",
+                        null,
+                        null,
                         resultSet.getString(PROFILE_PHOTO_COL),
-                        cart
+                        null
                 );
             }
             return null;
