@@ -1,33 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import useGetSearchProducts from "../utils/customHooks/useGetSearchProducts";
-import validateUserApi from "../utils/api/validateUser";
+import { DataContext } from "../utils/DataContext";
 const Header = () => {
   const [searchText, setSearchText] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState({});
   const [apiSearchText, setApiSearchText] = useState("");
+  const {user, isValidUser} = useContext(DataContext);
   const { loading, categories, products, error } = useGetSearchProducts(
     10,
     0,
     apiSearchText
   );
-  async function validateUser() {
-    try {
-      const data = await validateUserApi();
-      const { response } = data;
-      console.log(response);
-      setIsLoggedIn(true);
-      setUserData(response);
-    } catch (error) {
-      console.error(error);
-    }
-  }
   useEffect(() => {
-    validateUser();
-  }, []);
+    if(isValidUser){
+      setIsLoggedIn(true)
+    }else {
+      setIsLoggedIn(false);
+    }
+  }, [isValidUser]);
   function debounce(fn, time) {
     let timer;
     return (...args) => {
@@ -38,13 +31,7 @@ const Header = () => {
       }, time);
     };
   }
-  // const debouncedSearch = debounce(filterApiData,500)
-  // function enterToSearch(e) {
-  //   if (e.keyCode === 13) {
-  //     setSearch("");
-  //     setSearchText(e.target.value);
-  //   }
-  // }
+
   const handleSearch = useCallback(
     debounce((value) => {
       setApiSearchText(value);
@@ -141,13 +128,13 @@ const Header = () => {
           >
             <FaShoppingCart className="text-white " />
             <div className="hidden md:block">&nbsp;Cart</div>
-            {/* <div className="">({cartLen.length})</div> */}
+            <div className="">({user?.cart?.cartItems?.length})</div>
           </Link>
 
           {isLoggedIn ? (
             <div className="cursor-pointer w-[200px] text-white flex justify-center items-center mx-4 font-bold border-2 text-sm border-white px-2 py-1 rounded-lg">
-              <img src={userData?.profilePhoto} className="w-8 rounded-full" alt="" />
-              {userData?.userName}
+              <img src={user?.profilePhoto} className="w-8 rounded-full" alt="" />
+              {user?.userName}
             </div>
           ) : (
             <Link to="/login" className="cursor-pointer text-white font-bold border-2 border-white px-2 py-1 rounded-lg">

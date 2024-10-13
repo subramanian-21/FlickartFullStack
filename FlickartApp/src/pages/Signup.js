@@ -15,7 +15,6 @@ export default function Signup() {
     const navigate = useNavigate();
     const signup = async () => {
         try {
-
             const response = await postApi("/user/signup", inputData);
             setInputData({});
             toast.success("Account created successfully");

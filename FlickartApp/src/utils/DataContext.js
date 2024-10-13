@@ -1,38 +1,38 @@
-import { createContext, useMemo } from "react";
-import { useState } from "react";
-import useGetProducts from "./customHooks/useGetProducts";
+// DataContext.js
+import React, { createContext, useEffect, useState } from "react";
+import validateUserApi from "./api/validateUser";
 
-const DataContext = createContext({});
+export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-  const [searchText, setSearchText] = useState("");
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const { loading, products, categories, hasNext,totalCount ,error  } = useGetProducts(
-    limit,
-    offset,
-    searchText
-  );
-  const value = useMemo(() => ({
-    searchText,
-    setSearchText,
-    loading,
-    products,
-    categories,
-    error,
-    offset,
-    setOffset,
-    limit,
-    setLimit,
-    hasNext,
-    totalCount,
-  }), [searchText, loading, products, categories, error, offset, limit, hasNext, totalCount]);
-  return (
-    <DataContext.Provider
-      value={value}
-    >
-      {children}
-    </DataContext.Provider>
-  );
+    const [user, setUser] = useState(null);
+    const [isValidUser, setIsValidUser] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const fetchUserData = async () => {
+        try {
+            const userData = await validateUserApi();
+            setUser(userData.response);
+            setIsValidUser(true);
+        } catch (err) {
+            setError(err);
+            setIsValidUser(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    function isProductInCart(productId) {
+        if (user) {
+            return user.cart?.cartItems?.find((product) => product.productId === productId);
+        }
+    }
+    return (
+        <DataContext.Provider value={{ user, cartItems:user?.cart?.cartItems,cartId: user?.cart?.cartId, loading, error , isValidUser, isProductInCart, fetchUserData }}>
+            {children}
+        </DataContext.Provider>
+    );
 };
-export default DataContext;

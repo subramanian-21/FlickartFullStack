@@ -1,39 +1,50 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { useState } from "react";
-import { addToCart } from "../utils/redux/cartSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { getProduct } from "../utils/api/getProducts";
 import Reviews from "./products/Reviews";
+import { addToCartApi } from "../utils/api/addToCart";
+import { getCartId } from "../utils/util/localstorage";
+import toast from "react-hot-toast";
+import { DataContext } from "../utils/DataContext";
 const ProductBody = () => {
   const [image,setImage] = useState("")
-  const cartItems = useSelector(c=>c.cart.products)
   const [product,setProduct] = useState(null)
-  const dispatch = useDispatch()
-  const [cart, setCart] = useState("Add to Cart");
-  const {productId} = useParams();
-;
+  const [isAdded, setAdded] = useState(false);
+   const {productId} = useParams();
+  const {cartId, fetchUserData} = useContext(DataContext);
+  const navigate = useNavigate();
   async function fetchData() {
-    const data = await getProduct(productId);
-    console.log(data.response);
-    setProduct(data.response);
+    try {
+      const data = await getProduct(productId);
+      console.log(data.response);
+      setProduct(data.response);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.response);
+      navigate("/");
+    }
+   
   }
-  const handleAddCart=(payload)=>{
-    setCart('Added to Cart')
-    dispatch(addToCart(payload))
-  }
+ 
   useEffect(()=>{
     fetchData()
-  },[productId, cartItems])
+  },[productId])
 
+  async function handleAddToCart() {
+    const response = await addToCartApi(product.productId, cartId);
+    toast.success(response.response);
+    await fetchUserData();
+    setAdded(true);
+  }
   if (!product) {
     return <></>;
   }
   function changeImage(d){
     setImage(d)
   }
- 
+  
   return (
     <div>
       <div className="w-full flex flex-col md:flex-row text-white">
@@ -89,15 +100,15 @@ const ProductBody = () => {
           <div className="h-[1px] border border-1 border-gray-700"></div>
           <div className={product.stockCount>10?"text-green-500 my-4":"text-red-500 my-4"}>Only {product.stockCount} stocks Left</div>
           <button
-            onClick={() => handleAddCart(product)}
-            disabled={cart !=="Add to Cart"}
+            onClick={handleAddToCart}
+            disabled={isAdded}
             className={
-              cart === "Add to Cart"
+              isAdded
                 ? "h-[70px] w-[200px] justify-center flex items-center bg-orange-500 m-2 text-white text-xl cursor-pointer"
                 : "h-[70px] w-[200px] justify-center flex items-center bg-red-500 m-2 text-white text-xl cursor-pointer"
             }
           >
-            {cart}
+            {isAdded ? "Added to Cart"  : "Add To Cart"}
           </button>
         </div>
       </div>

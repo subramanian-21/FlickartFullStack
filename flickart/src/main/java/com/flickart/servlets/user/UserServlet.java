@@ -5,6 +5,8 @@ import com.flickart.controller.UserController;
 import com.flickart.model.User;
 import com.flickart.util.JsonUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -35,7 +37,10 @@ public class UserServlet extends HttpServlet {
                  User user = gson.fromJson(req.getReader(), User.class);
                 map = UserController.createAccount(user);
             }else if (path.equals("/refresh")) {
-                String refreshToken = gson.toJson("refreshToken");
+                JsonObject jsonObject = gson.fromJson(req.getReader(), JsonObject.class);
+                String refreshToken = jsonObject.get("refreshToken").getAsString();
+
+                System.out.println(refreshToken+" refreshToken");
                  if (refreshToken == null) {
                      throw new ServletException("Refresh token is required");
                  }

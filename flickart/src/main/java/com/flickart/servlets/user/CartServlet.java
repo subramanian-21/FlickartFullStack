@@ -3,29 +3,30 @@ package com.flickart.servlets.user;
 import com.flickart.dao.CartDao;
 import com.flickart.util.JsonUtil;
 import com.google.gson.Gson;
-import io.jsonwebtoken.JwtException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-
 @WebServlet("/api/user/cart/*")
 public class CartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) {
         try {
+            Gson gson = new Gson();
             String pathInfo = req.getPathInfo();
             if(pathInfo.equals("/add")) {
-                String productId = req.getParameter("productId");
-                String userId = req.getParameter("userId");
-                CartDao.addToCart(userId, productId);
+                JsonObject jsonObject = gson.fromJson(req.getReader(), JsonObject.class);
+                JsonElement productId = jsonObject.get("productId");
+                JsonElement cartId = jsonObject.get("cartId");
+                CartDao.addToCart(cartId.getAsString(), productId.getAsString());
             }else {
                 throw  new ServletException("Invalid path");
             }
-            JsonUtil.sendJsonResponse(401, res, "Added successfully");
+            JsonUtil.sendJsonResponse(200, res, "Added successfully");
         }catch (Exception e) {
             JsonUtil.showError(res, e);
         }
@@ -35,7 +36,7 @@ public class CartServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         String pathInfo = req.getPathInfo();
         try {
-            if(pathInfo.equals("/add")) {
+            if(pathInfo.equals("/update")) {
                 String quantity = req.getParameter("quantity");
                 String productId = req.getParameter("productId");
                 String cartId = req.getParameter("cartId");

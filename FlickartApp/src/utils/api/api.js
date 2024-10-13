@@ -37,16 +37,16 @@ instance.interceptors.response.use(
           if (refreshToken) {
 
             const response = await instance.post('/user/refresh', { refreshToken });
-            setRefreshToken(response.data.refreshToken);
-            setAccessToken(response.data.accessToken);
+            setRefreshToken(response.data.response.refreshToken);
+            setAccessToken(response.data.response.accessToken);
             
-            instance.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
-            originalConfig.headers.Authorization = `Bearer ${response.data.accessToken}`;
+            instance.defaults.headers.common.Authorization = `Bearer ${response.data.response.accessToken}`;
+            originalConfig.headers.Authorization = `Bearer ${response.data.response.accessToken}`;
             
             return instance(originalConfig);
           }
         } catch (_error) {
-          cleanToken();
+          // cleanToken();
           window.location.href = '/login';
           return Promise.reject(_error);
         }

@@ -86,22 +86,24 @@ public class CartDao {
         }
     }
 
-    public static Cart getCart(String cartId) throws SQLException, ClassNotFoundException {
+    public static Cart getCart(String userId) throws SQLException, ClassNotFoundException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            if(cartId == null) {
+            if(userId == null) {
                 throw new SQLException("Invalid cart id");
             }
-            List<CartItem> cartItems = CartItemsDao.getCartItems(cartId);
-            connection = JDBCUtil.getConnection();
-            preparedStatement = connection.prepareStatement("select * from " + TABLE_NAME + " where cartId = ?");
-            preparedStatement.setString(1, cartId);
-            resultSet = preparedStatement.executeQuery();
 
+            connection = JDBCUtil.getConnection();
+            preparedStatement = connection.prepareStatement("select * from " + TABLE_NAME + " where userId = ?");
+            preparedStatement.setString(1, userId);
+            resultSet = preparedStatement.executeQuery();
+            System.out.println(resultSet.getFetchSize());
             if(resultSet.next()){
-                return new Cart(cartId, resultSet.getString(USER_ID_COL), resultSet.getFloat(TOTAL_AMOUNT_COL), cartItems);
+
+                List<CartItem> cartItems = CartItemsDao.getCartItems(resultSet.getString(CART_ID_COL));
+                return new Cart(resultSet.getString(CART_ID_COL),resultSet.getString(USER_ID_COL), resultSet.getFloat(TOTAL_AMOUNT_COL), cartItems);
             }
             return null;
         }catch (SQLException e) {

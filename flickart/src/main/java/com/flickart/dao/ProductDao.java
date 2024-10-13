@@ -299,7 +299,7 @@ public class ProductDao {
 			}
 		}
 	}
-	public  static  Product getProduct(String productId) throws Exception {
+	public  static  Product getProduct(String productId) throws SQLException, ClassNotFoundException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -310,7 +310,7 @@ public class ProductDao {
 			preparedStatement.setString(1, productId);
 			resultSet = preparedStatement.executeQuery();
 			if(!resultSet.next()){
-				throw new Exception("Invalid product id");
+				throw new SQLException("Invalid product id");
 			}
 
 			List<Review> reviews = ReviewDao.getReviews(productId);
@@ -373,6 +373,7 @@ public class ProductDao {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, productId);
 			resultSet = preparedStatement.executeQuery();
+			System.out.println("product id " + productId);
 			if(!resultSet.next()){
 				throw new SQLException("Invalid product id");
 			}

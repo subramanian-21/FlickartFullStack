@@ -25,13 +25,12 @@ public class CartItemsDao {
         PreparedStatement preparedStatement = null;
         try {
             connection = JDBCUtil.getConnection();
-            String query = CreateQuery.getInsertQuery(TABLE_NAME, CART_ITEM_ID_COL, CART_ID_COL, PRODUCT_ID_COL, QUANTITY_COL, PRICE_COL);
+            String query = CreateQuery.getInsertQuery(TABLE_NAME,  CART_ID_COL, PRODUCT_ID_COL, QUANTITY_COL, PRICE_COL);
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, UniqueId.getUniqueId());
-            preparedStatement.setString(2, cartId);
-            preparedStatement.setString(3, product.getProductId());
-            preparedStatement.setInt(4, 1);
-            preparedStatement.setDouble(5, product.getPrice());
+            preparedStatement.setString(1, cartId);
+            preparedStatement.setString(2, product.getProductId());
+            preparedStatement.setInt(3, 1);
+            preparedStatement.setDouble(4, product.getPrice());
             preparedStatement.executeUpdate();
             return true;
         }catch (SQLException e) {
@@ -65,7 +64,8 @@ public class CartItemsDao {
                 String productId = rs.getString(PRODUCT_ID_COL);
                 int quantity = rs.getInt(QUANTITY_COL);
                 float price = rs.getFloat(PRICE_COL);
-                CartItem cartItem = new CartItem(cartItemId,cartId,productId,quantity,price);
+                Product product = ProductDao.getProduct(productId);
+                CartItem cartItem = new CartItem(cartItemId,cartId,productId,product,quantity,price);
                 cartItems.add(cartItem);
             }
             return cartItems;

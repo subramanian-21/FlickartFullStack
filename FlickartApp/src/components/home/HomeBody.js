@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import "../../styles/global.css";
-import DataContext from "../../utils/DataContext";
 import Loading from "../Loading";
 import CategoriesBody from "./CategoriesBody";
 import ProductsListBody from "./ProductsListBody";
+import useGetProductsPagination from "../../utils/customHooks/useGetProductsPagination";
 const HomeBody = () => {
   const {
     loading,
@@ -13,7 +13,7 @@ const HomeBody = () => {
     setOffset,
     limit,
     hasNext
-  } = useContext(DataContext);
+  } = useGetProductsPagination();
 
 
  
