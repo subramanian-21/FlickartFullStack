@@ -21,8 +21,8 @@ For more detailed information, please refer to the [Backend README](./flickart/R
 
 ## Technology Stack
 
-- **Frontend**: React, Axios
-- **Backend**: Java Servlets, MySQL, JWT for authentication, Gson for JSON serialization
+- **Frontend**: React, Axios, Tailwindcss
+- **Backend**: Java Servlets, jjwt-JWT for authentication, Gson for JSON serialization
 - **Database**: MySQL
 
 For installation instructions and further details, please visit the specific component READMEs:
