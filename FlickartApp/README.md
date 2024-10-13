@@ -4,7 +4,7 @@
 
 ## Description
 
-The frontend of this eCommerce application is built with **React** and allows users to browse products, manage their cart, and submit reviews. The admin section provides controls for product management. The frontend is optimized using modern JavaScript techniques, including **lazy loading** and **infinite scrolling** for better performance and user experience.
+The frontend of this Flickart application is built with **React** and allows users to browse products, manage their cart, and submit reviews. The admin section provides controls for product management. The frontend is optimized using modern JavaScript techniques, including **lazy loading** and **infinite scrolling** for better performance and user experience.
 
 ## Key Features
 
@@ -53,25 +53,3 @@ Infinite scrolling is implemented for the product listing page, allowing users t
 ### API Requests
 
 The frontend interacts with the backend using **Axios** for making API requests. It handles authentication by sending JWT tokens in the `Authorization` header for protected routes.
-
-## Components Overview
-
-### `ProductList`
-
-- Displays a list of products with infinite scrolling.
-- Fetches data from `/api/products`.
-
-### `Cart`
-
-- Displays the user's cart with the ability to update quantities.
-- Uses `/api/cart` endpoints.
-
-### `AdminPanel`
-
-- Allows admins to add, update, and delete products.
-- Uses `/api/products` endpoints for product management.
-
-## Future Enhancements
-
-- **Order Management**: Integrate order tracking and status updates for users.
-- **Payment Integration**: Support for payment gateways.
