@@ -69,22 +69,19 @@ public class ProductDao {
 			preparedStatement.setInt(12,  product.getRatingCount());
 
 			preparedStatement.executeUpdate();
-			addImages(uniqueProductId, product.getImages());
+			addImages(connection, uniqueProductId, product.getImages());
 			return true;
 		}catch (SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 	}
 	public static boolean updateProductCount(String productId, int updateCount) throws SQLException , ClassNotFoundException {
@@ -94,7 +91,7 @@ public class ProductDao {
 			String query = CreateQuery.getUpdateQuery(TABLE_NAME, PRODUCT_ID_COL ,PRODUCT_STOCK_COL);
 			connection = JDBCUtil.getConnection();
 			preparedStatement = connection.prepareStatement(query);
-			int prevCount = getProductStock(productId);
+			int prevCount = getProductStock(connection, productId);
 			if(prevCount < updateCount) {
 				throw new SQLException("Given count greater than available count.");
 			}
@@ -107,16 +104,13 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 
 	}
@@ -160,16 +154,13 @@ public class ProductDao {
 		e.printStackTrace();
 		throw new SQLException(e.getMessage());
 	}
-	catch (ClassNotFoundException e) {
-		e.printStackTrace();
-		throw new ClassNotFoundException(e.getMessage());
-	}finally {
+	finally {
 		if(preparedStatement != null) {
 			preparedStatement.close();
 		}
-		if(connection != null) {
-			connection.close();
-		}
+//		if(connection != null) {
+//			connection.close();
+//		}
 	}
 		
 	}
@@ -189,16 +180,13 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 		
 	}
@@ -216,26 +204,21 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 		
 	}
-	public static int getProductStock(String productId) throws ClassNotFoundException, SQLException{
-		Connection connection = null;
+	public static int getProductStock(Connection connection, String productId) throws ClassNotFoundException, SQLException{
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		try {
 			String query = CreateQuery.getSelectQuery(TABLE_NAME, PRODUCT_ID_COL);
-			connection = JDBCUtil.getConnection();
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, productId);
 
@@ -247,18 +230,12 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 				resultSet.close();
 			}
 			if(preparedStatement != null) {
 				preparedStatement.close();
-			}
-			if(connection != null) {
-				connection.close();
 			}
 		}
 	}
@@ -284,19 +261,16 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 				resultSet.close();
 			}
 			if(statement != null) {
 				statement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 	}
 	public  static  Product getProduct(String productId) throws SQLException, ClassNotFoundException {
@@ -309,12 +283,40 @@ public class ProductDao {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, productId);
 			resultSet = preparedStatement.executeQuery();
+			return getProduct(connection, productId);
+		}catch (SQLException e) {
+			e.printStackTrace();
+			throw new SQLException(e.getMessage());
+		}
+		finally {
+			if(resultSet != null){
+				resultSet.close();
+			}
+			if(preparedStatement != null) {
+				preparedStatement.close();
+			}
+//			if(connection != null) {
+//				connection.close();
+//			}
+		}
+		
+	}
+	static  int count = 1;
+	public  static  Product getProduct(Connection connection, String productId) throws SQLException, ClassNotFoundException {
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		try {
+			System.out.println(count++);
+			String query = CreateQuery.getSelectQuery(TABLE_NAME, PRODUCT_ID_COL);
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, productId);
+			resultSet = preparedStatement.executeQuery();
 			if(!resultSet.next()){
 				throw new SQLException("Invalid product id");
 			}
 
-			List<Review> reviews = ReviewDao.getReviews(productId);
-			List<String > imageList = getProductImages(productId);
+			List<Review> reviews = ReviewDao.getReviews(connection, productId);
+			List<String > imageList = getProductImages(connection, productId);
 			String createdAt = resultSet.getString("createdAt");
 			return new Product(
 					productId,
@@ -337,21 +339,17 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 				resultSet.close();
 			}
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
-		
 	}
 	public static Map<Object, Object> getAllProducts(int limit, int offset, String searchString) throws  ClassNotFoundException, SQLException{
 		String query = "";
@@ -373,12 +371,11 @@ public class ProductDao {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, productId);
 			resultSet = preparedStatement.executeQuery();
-			System.out.println("product id " + productId);
 			if(!resultSet.next()){
 				throw new SQLException("Invalid product id");
 			}
-			List<String > imageList = getProductImages(productId);
-			List<Review> reviews = ReviewDao.getReviews(productId);
+			List<String > imageList = getProductImages(connection, productId);
+			List<Review> reviews = ReviewDao.getReviews(connection, productId);
 
 			return new Product(
 					productId,
@@ -401,19 +398,16 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 			resultSet.close();
 			}
 			if(preparedStatement != null) {
 			preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 		
 	}
@@ -437,8 +431,8 @@ public class ProductDao {
 			resultSet = preparedStatement.executeQuery();
 			while(resultSet.next()) {
 				String productId = resultSet.getString(PRODUCT_ID_COL);
-				List<String > imageList = getProductImages(productId);
-				List<Review> reviews = ReviewDao.getReviews(productId);
+				List<String > imageList = getProductImages(connection, productId);
+				List<Review> reviews = ReviewDao.getReviews(connection, productId);
 
 				productList.add(new Product(
 						productId,
@@ -463,27 +457,22 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 				resultSet.close();
 			}
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 		
 	}
-	private static List<String> getProductImages(String productId) throws  ClassNotFoundException, SQLException{
-		Connection connection = null;
+	private static List<String> getProductImages(Connection connection, String productId) throws  ClassNotFoundException, SQLException{
 		PreparedStatement preparedStatement = null;
 		try {
-			connection = JDBCUtil.getConnection();
 			preparedStatement = connection.prepareStatement(CreateQuery.getSelectQuery(IMAGE_TABLE_NAME, PRODUCT_ID_COL));
 			preparedStatement.setString(1, productId);
 			ResultSet imageResultSet = preparedStatement.executeQuery();
@@ -496,26 +485,18 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 
 			if(preparedStatement != null) {
 				preparedStatement.close();
-			}
-			if(connection != null) {
-				connection.close();
 			}
 		}
 		
 		
 	}
-	private static boolean addImages(String productId, List<String> images) throws ClassNotFoundException, SQLException{
-		Connection connection = null;
+	private static boolean addImages(Connection connection, String productId, List<String> images) throws ClassNotFoundException, SQLException{
 		Statement imagePs  = null;
 		try {
-			connection = JDBCUtil.getConnection();
 			StringBuilder imageQuery = new StringBuilder("insert into ProductImages (productId,imageUrl) values");
 			for(int i = 0;i<images.size();i++) {
 				imageQuery.append('(');
@@ -534,15 +515,9 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(imagePs != null){
 				imagePs.close();
-			}
-			if(connection != null) {
-				connection.close();
 			}
 		}
 	}
@@ -578,19 +553,16 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 				resultSet.close();
 			}
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 		
 	}
@@ -599,7 +571,9 @@ public class ProductDao {
 		return getAllProductsWithQuery(query, limit, offset);
 	}
 
+
 	public static Map<Object, Object> getAllProductsWithQuery(String query, int limit, int offset) throws ClassNotFoundException, SQLException {
+
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -614,8 +588,8 @@ public class ProductDao {
 					totalCount = resultSet.getInt("count");
 				}
 				String productId = resultSet.getString(PRODUCT_ID_COL);
-				List<String > imageList = getProductImages(productId);
-				List<Review> reviews = ReviewDao.getReviews(productId);
+				List<String > imageList = getProductImages(connection, productId);
+				List<Review> reviews = ReviewDao.getReviews(connection, productId);
 
 				productList.add(new Product(
 						productId,
@@ -650,19 +624,16 @@ public class ProductDao {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(resultSet != null){
 				resultSet.close();
 			}
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-			if(connection != null) {
-				connection.close();
-			}
+//			if(connection != null) {
+//				connection.close();
+//			}
 		}
 	}
 }

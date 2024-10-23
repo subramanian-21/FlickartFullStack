@@ -7,7 +7,7 @@ public class Review {
     private  float rating;
     private  String comment;
     private  String createdAt;
-    private User userDetails;
+    private  User userDetails;
 
     public Review(String reviewId, String userId, User userDetails,String productId, float rating, String comment, String createdAt) {
         this.reviewId = reviewId;
@@ -74,8 +74,5 @@ public class Review {
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-
-
 
 }

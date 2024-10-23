@@ -24,17 +24,12 @@ public class AdminUserDao {
 			if(rs.next()) {
 				return new AdminUser(rs.getString("username"),rs.getString("email"), rs.getString("password"), rs.getString("role"));
 			}
-			connection.close();
-
 			return null;
 		}catch (SQLException e) {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new ClassNotFoundException(e.getMessage());
-		}finally {
+		finally {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}

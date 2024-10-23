@@ -34,10 +34,7 @@ public class CategoriesDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
             if(resultSet != null){
                 resultSet.close();
             }
@@ -71,10 +68,7 @@ public class CategoriesDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
             if(resultSet != null){
                 resultSet.close();
             }

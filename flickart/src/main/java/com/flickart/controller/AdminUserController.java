@@ -29,7 +29,7 @@ public class AdminUserController {
 		try {
 			user = gson.fromJson(JwtUtil.validateTokenAdmin(accessToken), AdminUser.class);
 		}catch (Exception e){
-			e.printStackTrace();
+			throw new Exception("Invalid access token");
 		}
 		return user;
 	}

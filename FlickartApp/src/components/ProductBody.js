@@ -5,9 +5,9 @@ import { useState } from "react";
 import { getProduct } from "../utils/api/getProducts";
 import Reviews from "./products/Reviews";
 import { addToCartApi } from "../utils/api/addToCart";
-import { getCartId } from "../utils/util/localstorage";
 import toast from "react-hot-toast";
 import { DataContext } from "../utils/DataContext";
+import ReviewAdd from "./products/ReviewAdd";
 const ProductBody = () => {
   const [image,setImage] = useState("")
   const [product,setProduct] = useState(null)
@@ -18,7 +18,6 @@ const ProductBody = () => {
   async function fetchData() {
     try {
       const data = await getProduct(productId);
-      console.log(data.response);
       setProduct(data.response);
     } catch (error) {
       console.log(error);
@@ -27,9 +26,10 @@ const ProductBody = () => {
     }
    
   }
- 
+ const {isProductInCart, isValidUser} = useContext(DataContext);
   useEffect(()=>{
     fetchData()
+    setAdded(isProductInCart(productId))
   },[productId])
 
   async function handleAddToCart() {
@@ -38,6 +38,7 @@ const ProductBody = () => {
     await fetchUserData();
     setAdded(true);
   }
+
   if (!product) {
     return <></>;
   }
@@ -104,14 +105,17 @@ const ProductBody = () => {
             disabled={isAdded}
             className={
               isAdded
-                ? "h-[70px] w-[200px] justify-center flex items-center bg-orange-500 m-2 text-white text-xl cursor-pointer"
-                : "h-[70px] w-[200px] justify-center flex items-center bg-red-500 m-2 text-white text-xl cursor-pointer"
+                ? "h-[70px] w-[200px] justify-center flex items-center bg-red-500 cursor-not-allowed m-2 text-white text-xl cursor-pointer"
+                : "h-[70px] w-[200px] justify-center flex items-center bg-orange-500  m-2 text-white text-xl cursor-pointer"
             }
           >
             {isAdded ? "Added to Cart"  : "Add To Cart"}
           </button>
         </div>
       </div>
+      {
+        isValidUser ? <ReviewAdd productId={productId} fetchProduct={fetchData}/> : <>Login to add review</>
+      }
             <Reviews reviews={product.reviews}/>
     </div>
   );

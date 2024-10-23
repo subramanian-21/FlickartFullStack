@@ -56,10 +56,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
+
         finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
@@ -101,10 +98,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
+
         finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
@@ -134,7 +128,7 @@ public class UserDao {
                 String storedHashedPassword = resultSet.getString(PASSWORD_COL);
                 if(HashPassword.validatePassword(password, storedHashedPassword)){
                     String userId = resultSet.getString("userId");
-                    Cart cart = CartDao.getCart(userId);
+                    Cart cart = CartDao.getCart(connection, userId);
                     return new User(userId, resultSet.getString("userName"), email, resultSet.getString("password"), resultSet.getString("profilePhoto"), cart);
                 }
             }
@@ -143,10 +137,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
+
         finally {
             if(resultSet != null){
                 resultSet.close();
@@ -170,13 +161,13 @@ public class UserDao {
             connection = JDBCUtil.getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, userId);
-            Cart cart = CartDao.getCart(userId);
+//            Cart cart = CartDao.getCart(connection, userId);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
                 return new User(
                         resultSet.getString(USER_ID_COL),
                         resultSet.getString(USER_NAME_COL),
-                        null,
+                        resultSet.getString(EMAIL_COL),
                         null,
                         resultSet.getString(PROFILE_PHOTO_COL),
                         null
@@ -216,7 +207,7 @@ public class UserDao {
             resultSet = preparedStatement.executeQuery();
 
             if(resultSet.next()) {
-                Cart cart = CartDao.getCart(resultSet.getString(USER_ID_COL));
+                Cart cart = CartDao.getCart(connection , resultSet.getString(USER_ID_COL));
                 return new User(
                         resultSet.getString(USER_ID_COL),
                         resultSet.getString(USER_NAME_COL),
@@ -232,10 +223,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
+
         finally {
             if(resultSet != null){
                 resultSet.close();
@@ -267,10 +255,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
+
         finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
@@ -297,10 +282,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
+
         finally {
             if(resultSet != null){
                 resultSet.close();

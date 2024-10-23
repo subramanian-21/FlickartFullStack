@@ -25,22 +25,20 @@ public class CartItemsDao {
         PreparedStatement preparedStatement = null;
         try {
             connection = JDBCUtil.getConnection();
-            String query = CreateQuery.getInsertQuery(TABLE_NAME,  CART_ID_COL, PRODUCT_ID_COL, QUANTITY_COL, PRICE_COL);
+            String query = CreateQuery.getInsertQuery(TABLE_NAME, CART_ID_COL, PRODUCT_ID_COL, QUANTITY_COL, PRICE_COL, CART_ITEM_ID_COL);
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, cartId);
             preparedStatement.setString(2, product.getProductId());
             preparedStatement.setInt(3, 1);
             preparedStatement.setDouble(4, product.getPrice());
+            preparedStatement.setString(5, UniqueId.getUniqueId());
             preparedStatement.executeUpdate();
             return true;
         }catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
 
             if(preparedStatement != null) {
                 preparedStatement.close();
@@ -50,21 +48,22 @@ public class CartItemsDao {
             }
         }
     }
-    static List<CartItem> getCartItems(String cartId) throws  SQLException, ClassNotFoundException {
-        Connection connection = null;
+    static List<CartItem> getCartItems(Connection connection, String cartId) throws  SQLException, ClassNotFoundException {
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             List<CartItem> cartItems  = new ArrayList<CartItem>();
-            connection = JDBCUtil.getConnection();
             preparedStatement = connection.prepareStatement(CreateQuery.getSelectQuery(TABLE_NAME, CART_ID_COL));
             preparedStatement.setString(1, cartId);
-            ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()) {
-                String cartItemId = rs.getString(CART_ITEM_ID_COL);
-                String productId = rs.getString(PRODUCT_ID_COL);
-                int quantity = rs.getInt(QUANTITY_COL);
-                float price = rs.getFloat(PRICE_COL);
-                Product product = ProductDao.getProduct(productId);
+            resultSet = preparedStatement.executeQuery();
+            System.out.println("IN CART ITEMS");
+            while(resultSet.next()) {
+
+                String cartItemId = resultSet.getString(CART_ITEM_ID_COL);
+                String productId = resultSet.getString(PRODUCT_ID_COL);
+                int quantity = resultSet.getInt(QUANTITY_COL);
+                float price = resultSet.getFloat(PRICE_COL);
+              Product product = ProductDao.getProduct(connection, productId);
                 CartItem cartItem = new CartItem(cartItemId,cartId,productId,product,quantity,price);
                 cartItems.add(cartItem);
             }
@@ -73,36 +72,28 @@ public class CartItemsDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
+            if(resultSet != null) {
+                resultSet.close();
+            }
             if(preparedStatement != null) {
                 preparedStatement.close();
             }
-            if(connection != null) {
-                connection.close();
-            }
         }
     }
-    static boolean removeFromCart(String cartId, String productId) throws SQLException, ClassNotFoundException {
+    static boolean removeFromCart(String cartItemId) throws SQLException, ClassNotFoundException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = JDBCUtil.getConnection();
-            preparedStatement = connection.prepareStatement("delete from " + TABLE_NAME + " where " + CART_ID_COL + " = ? & "+PRODUCT_ID_COL+" = ?");
-            preparedStatement.setString(1, cartId);
-            preparedStatement.setString(2, productId);
-            int executeCount = preparedStatement.executeUpdate();
-            return  executeCount > 0;
+            preparedStatement = connection.prepareStatement("delete from " + TABLE_NAME + " where " + CART_ITEM_ID_COL + " = ? ");
+            preparedStatement.setString(1, cartItemId);
+            return  preparedStatement.executeUpdate() > 0;
         }catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+       finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
             }
@@ -116,12 +107,12 @@ public class CartItemsDao {
         PreparedStatement preparedStatement = null;
         
        try {
-           int availableQuantity = ProductDao.getProductStock(productId);
+           connection = JDBCUtil.getConnection();
+           int availableQuantity = ProductDao.getProductStock(connection, productId);
            if(quantity > availableQuantity) {
                throw new SQLException("Only "+availableQuantity+" is available");
            }
            ProductDao.updateProductCount(productId, quantity);
-           connection = JDBCUtil.getConnection();
            preparedStatement = connection.prepareStatement("update " + TABLE_NAME + " set quantity = ? where " + CART_ID_COL + " = ? & "+PRODUCT_ID_COL+" = ?");
            preparedStatement.setInt(1, quantity);
            preparedStatement.setString(2, cartId);
@@ -133,10 +124,7 @@ public class CartItemsDao {
            e.printStackTrace();
            throw new SQLException(e.getMessage());
        }
-       catch (ClassNotFoundException e) {
-           e.printStackTrace();
-           throw new ClassNotFoundException(e.getMessage());
-       }finally {
+       finally {
            if(preparedStatement != null) {
                preparedStatement.close();
            }
@@ -162,10 +150,7 @@ public class CartItemsDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
             }

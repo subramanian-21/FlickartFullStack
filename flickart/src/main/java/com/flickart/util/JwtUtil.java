@@ -4,16 +4,15 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 
 import com.flickart.model.AdminUser;
-import com.flickart.model.User;
-import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.AeadAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 public class JwtUtil {
+
+	static SecretKey key = Jwts.SIG.HS256.key().build();
 
 	private static final SecretKey ENCRYPTION_KEY_USER = Keys.hmacShaKeyFor("hihellomysecretkey3893jmmjhxnjhdj".getBytes());
 	private static final SecretKey ENCRYPTION_KEY_ADMIN = Keys.hmacShaKeyFor("hihellomysecretkey3893issecretijk".getBytes());
@@ -42,11 +41,7 @@ public class JwtUtil {
 	private static String createToken(String message, long expiringTime, SecretKey encryptionKey) {
 		try {
 			Date expiryDate = new Date(System.currentTimeMillis() + expiringTime);
-			return Jwts.builder()
-					.setSubject(message)
-					.setExpiration(expiryDate)
-					.signWith(encryptionKey) // Ensure to use the correct signing method
-					.compact();
+			return Jwts.builder().subject(message).signWith(key).expiration(expiryDate).compact();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new JwtException("Error creating JWT: " + e.getMessage());
@@ -61,16 +56,11 @@ public class JwtUtil {
 		return validateToken(compact, ENCRYPTION_KEY_USER);
 	}
 
-	public static String validateToken(String compact, SecretKey encryptionKey) {
-		try {
+	public static String validateToken(String compact, SecretKey encryptionKey)  throws JwtException{
 			Jws<Claims> jws = Jwts.parser()
-					.setSigningKey(encryptionKey)
+					.verifyWith(key)
 					.build()
-					.parseClaimsJws(compact);
-			return jws.getBody().getSubject(); // Use getSubject() instead of accessing payload directly
-		} catch (JwtException e) {
-			e.printStackTrace();
-			throw new JwtException("Invalid JWT token: " + e.getMessage());
-		}
+					.parseSignedClaims(compact);
+			return jws.getPayload().getSubject();
 	}
 }

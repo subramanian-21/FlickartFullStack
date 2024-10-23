@@ -40,7 +40,6 @@ public class UserServlet extends HttpServlet {
                 JsonObject jsonObject = gson.fromJson(req.getReader(), JsonObject.class);
                 String refreshToken = jsonObject.get("refreshToken").getAsString();
 
-                System.out.println(refreshToken+" refreshToken");
                  if (refreshToken == null) {
                      throw new ServletException("Refresh token is required");
                  }
@@ -61,7 +60,6 @@ public class UserServlet extends HttpServlet {
             if(path == null || path.equals("/")){
                 String authHeader = req.getHeader("Authorization");
                 String accessToken = authHeader.substring(7);
-                AdminUserController.getUser(accessToken);
                 JsonUtil.sendJsonResponse(200, resp, UserController.getUser(accessToken));
             }else {
                 throw new ServletException("Invalid path");

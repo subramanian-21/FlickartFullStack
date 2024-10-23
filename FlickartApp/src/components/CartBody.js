@@ -20,10 +20,10 @@ const CartBody = () => {
         <div className="">
           {cartItems?.length > 0 ? (
             cartItems?.map((k) => (
-             <CartItem key={k?.product?.productId} product={k?.product} />
+             <CartItem key={k?.product?.productId} cartItem={k} />
             ))
           ) : (
-            <div className="font-bold text-2xl mx-auto flex justify-center items-center my-[50px]">
+            <div className="font-bold text-2xl text-white mx-auto flex justify-center items-center my-[50px]">
               Cart is Empty
             </div>
           )}

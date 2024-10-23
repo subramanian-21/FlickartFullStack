@@ -19,7 +19,6 @@ public class ProductServlet extends HttpServlet{
 	
 		public void doPost(HttpServletRequest req, HttpServletResponse res) {
 		String path = req.getPathInfo();
-			System.out.println("path "+path);
 		Gson gson = new Gson();
 		try {
 			int rowCount = 0;

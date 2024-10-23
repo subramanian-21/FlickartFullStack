@@ -42,7 +42,6 @@ public class UserController {
         return map;
     }
     public static User getUser(String accessToken) throws SQLException, ClassNotFoundException {
-        Gson gson = new Gson();
         String userEmail = JwtUtil.validateTokenUser(accessToken);
         return UserDao.getUserByEmail(userEmail);
     }

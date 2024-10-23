@@ -53,11 +53,13 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp)  {
         try {
-            String pathInfo = req.getPathInfo();
             String quantity = req.getParameter("quantity");
+            String cartItemId = req.getParameter("cartItemId");
             String productId = req.getParameter("productId");
             String cartId = req.getParameter("cartId");
-            CartDao.removeFromCart(cartId, productId, Integer.parseInt(quantity));
+
+            CartDao.removeFromCart(cartItemId, cartId, productId, Integer.parseInt(quantity));
+
             JsonUtil.sendJsonResponse(200, resp, "Deleted successfully");
         }catch (Exception e) {
             JsonUtil.showError(resp, e);

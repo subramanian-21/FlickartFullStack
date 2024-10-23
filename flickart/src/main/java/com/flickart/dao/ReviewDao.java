@@ -22,13 +22,11 @@ public class ReviewDao {
     private static  String COMMENT_COL = "comment";
     private static  String TIMESTAMPS_COL = "timestamp";
 
-    public static List<Review> getReviews(String productId) throws SQLException, ClassNotFoundException {
-        Connection connection = null;
+    public static List<Review> getReviews(Connection connection, String productId) throws SQLException, ClassNotFoundException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             List<Review> reviews = new ArrayList<Review>();
-            connection = JDBCUtil.getConnection();
             String query = CreateQuery.getSelectQuery(TABLE_NAME, PRODUCT_ID_COL);
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, productId);
@@ -36,7 +34,9 @@ public class ReviewDao {
 
             while (resultSet.next()) {
                 User user = UserDao.getUserById(resultSet.getString(USER_ID_COL));
-                reviews.add(new Review(resultSet.getString(REVIEW_ID_COL), resultSet.getString(USER_ID_COL),user, resultSet.getString(PRODUCT_ID_COL) ,resultSet.getFloat(RATING_COL), resultSet.getString(COMMENT_COL), resultSet.getString(TIMESTAMPS_COL)));
+                System.out.println(resultSet.getString(REVIEW_ID_COL));
+                Review review = new Review(resultSet.getString(REVIEW_ID_COL), resultSet.getString(USER_ID_COL),user, resultSet.getString(PRODUCT_ID_COL) ,resultSet.getFloat(RATING_COL), resultSet.getString(COMMENT_COL), resultSet.getString(TIMESTAMPS_COL));
+                reviews.add(review);
             }
             return reviews;
         }
@@ -44,19 +44,12 @@ public class ReviewDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }
         finally {
             if(resultSet != null) {
                 resultSet.close();
             }
             if(preparedStatement != null) {
                 preparedStatement.close();
-            }
-            if(connection != null) {
-                connection.close();
             }
         }
     }
@@ -79,10 +72,7 @@ public class ReviewDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally{
+       finally{
             if(preparedStatement != null) {
                 preparedStatement.close();
             }

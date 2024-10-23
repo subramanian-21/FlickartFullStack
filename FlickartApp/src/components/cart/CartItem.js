@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { IoIosRemoveCircle } from 'react-icons/io'
-import { Link } from 'react-router-dom'
-
-export default function CartItem({product}) {
+import { Link, useNavigate } from 'react-router-dom'
+import { DataContext } from '../../utils/DataContext'
+import {toast} from 'react-hot-toast'
+import deleteCartProductApi from '../../utils/api/deleteCartProduct'
+export default function CartItem({cartItem}) {
+  const {product} = cartItem;
+  const {cartId, fetchUserData} = useContext(DataContext)
+  const removeCartElement = async  () =>{
+    try {
+      
+      const response = await deleteCartProductApi(cartItem.quantity, cartItem?.productId, cartId, cartItem?.cartItemId);
+      toast.success(response.response);
+      await fetchUserData();
+    } catch (error) {
+      toast.error(error.response.data.response);
+    }
+  }
   return (
     <div
     className="h-[200px]  mx-auto my-2  border border-1 text-gray-300  border-zinc-700 shadow-md rounded-lg w-full flex items-center p-3 justify-between"
@@ -53,10 +67,10 @@ export default function CartItem({product}) {
     </Link>
 
     <div
-      // onClick={() => removeCartElement(k)}
+      onClick={() => removeCartElement()}
       className="text-red-500 text-2xl"
     >
-      <IoIosRemoveCircle />
+      <IoIosRemoveCircle  />
     </div>
   </div>
   )

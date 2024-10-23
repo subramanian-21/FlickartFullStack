@@ -35,10 +35,7 @@ public class CartDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+       finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
             }
@@ -70,10 +67,7 @@ public class CartDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+       finally {
             if(resultSet != null){
                 resultSet.close();
             }
@@ -86,23 +80,18 @@ public class CartDao {
         }
     }
 
-    public static Cart getCart(String userId) throws SQLException, ClassNotFoundException {
-        Connection connection = null;
+    public static Cart getCart(Connection connection, String userId) throws SQLException, ClassNotFoundException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             if(userId == null) {
                 throw new SQLException("Invalid cart id");
             }
-
-            connection = JDBCUtil.getConnection();
             preparedStatement = connection.prepareStatement("select * from " + TABLE_NAME + " where userId = ?");
             preparedStatement.setString(1, userId);
             resultSet = preparedStatement.executeQuery();
-            System.out.println(resultSet.getFetchSize());
             if(resultSet.next()){
-
-                List<CartItem> cartItems = CartItemsDao.getCartItems(resultSet.getString(CART_ID_COL));
+                List<CartItem> cartItems = CartItemsDao.getCartItems(connection, resultSet.getString(CART_ID_COL));
                 return new Cart(resultSet.getString(CART_ID_COL),resultSet.getString(USER_ID_COL), resultSet.getFloat(TOTAL_AMOUNT_COL), cartItems);
             }
             return null;
@@ -121,20 +110,20 @@ public class CartDao {
             if(preparedStatement != null) {
                 preparedStatement.close();
             }
-            if(connection != null) {
-                connection.close();
-            }
         }
     }
-    public static boolean removeFromCart(String cartId,int quantity, Product product) throws SQLException, ClassNotFoundException{
-        CartItemsDao.removeFromCart(cartId, product.getProductId());
-        updateCartTotalPrice(cartId, -(quantity*product.getPrice()));
-        return true;
+
+    public static boolean removeFromCart(String cartItemId, String cartId,int quantity, Product product) throws SQLException, ClassNotFoundException{
+        if(CartItemsDao.removeFromCart(cartItemId)){
+            System.out.println("deleted it");
+            updateCartTotalPrice(cartId, -(quantity*product.getPrice()));
+            return true;
+        }
+        return false;
     }
-    public static boolean removeFromCart(String cartId, String productId, int quantity) throws SQLException, ClassNotFoundException{
+    public static boolean removeFromCart(String cartItemId, String cartId, String productId, int quantity) throws SQLException, ClassNotFoundException{
         Product product = ProductDao.getProductAdmin(productId);
-        removeFromCart(cartId, quantity, product);
-        return true;
+        return removeFromCart(cartItemId, cartId, quantity, product);
     }
     public static  boolean updateCartTotalPrice(String cartId, double productPrice) throws SQLException, ClassNotFoundException {
         Connection connection = null;
@@ -152,10 +141,7 @@ public class CartDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
             if(preparedStatement != null) {
                 preparedStatement.close();
             }
