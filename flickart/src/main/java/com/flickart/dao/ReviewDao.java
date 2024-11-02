@@ -34,7 +34,6 @@ public class ReviewDao {
 
             while (resultSet.next()) {
                 User user = UserDao.getUserById(resultSet.getString(USER_ID_COL));
-                System.out.println(resultSet.getString(REVIEW_ID_COL));
                 Review review = new Review(resultSet.getString(REVIEW_ID_COL), resultSet.getString(USER_ID_COL),user, resultSet.getString(PRODUCT_ID_COL) ,resultSet.getFloat(RATING_COL), resultSet.getString(COMMENT_COL), resultSet.getString(TIMESTAMPS_COL));
                 reviews.add(review);
             }

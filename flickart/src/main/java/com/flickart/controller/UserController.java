@@ -8,13 +8,14 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserController {
 
-    public static Map<Object, Object> login(String email, String password) throws  SQLException , ClassNotFoundException{
+    public static Map<Object, Object> login(String email, String password) throws  SQLException , ClassNotFoundException, NoSuchAlgorithmException {
         User user = UserDao.validateUser(email, password);
         if(user == null){
             throw new SQLException("Invalid email or password");

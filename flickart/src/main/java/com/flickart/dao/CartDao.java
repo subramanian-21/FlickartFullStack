@@ -115,7 +115,6 @@ public class CartDao {
 
     public static boolean removeFromCart(String cartItemId, String cartId,int quantity, Product product) throws SQLException, ClassNotFoundException{
         if(CartItemsDao.removeFromCart(cartItemId)){
-            System.out.println("deleted it");
             updateCartTotalPrice(cartId, -(quantity*product.getPrice()));
             return true;
         }

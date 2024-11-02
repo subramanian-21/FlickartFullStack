@@ -79,9 +79,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 	}
 	public static boolean updateProductCount(String productId, int updateCount) throws SQLException , ClassNotFoundException {
@@ -108,9 +108,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 
 	}
@@ -158,9 +158,9 @@ public class ProductDao {
 		if(preparedStatement != null) {
 			preparedStatement.close();
 		}
-//		if(connection != null) {
-//			connection.close();
-//		}
+		if(connection != null) {
+			connection.close();
+		}
 	}
 		
 	}
@@ -184,9 +184,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 		
 	}
@@ -208,9 +208,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 		
 	}
@@ -268,9 +268,9 @@ public class ProductDao {
 			if(statement != null) {
 				statement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 	}
 	public  static  Product getProduct(String productId) throws SQLException, ClassNotFoundException {
@@ -295,18 +295,16 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 		
 	}
-	static  int count = 1;
 	public  static  Product getProduct(Connection connection, String productId) throws SQLException, ClassNotFoundException {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		try {
-			System.out.println(count++);
 			String query = CreateQuery.getSelectQuery(TABLE_NAME, PRODUCT_ID_COL);
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, productId);
@@ -405,9 +403,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 			preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 		
 	}
@@ -464,9 +462,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 		
 	}
@@ -560,9 +558,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 		
 	}
@@ -631,9 +629,9 @@ public class ProductDao {
 			if(preparedStatement != null) {
 				preparedStatement.close();
 			}
-//			if(connection != null) {
-//				connection.close();
-//			}
+			if(connection != null) {
+				connection.close();
+			}
 		}
 	}
 }

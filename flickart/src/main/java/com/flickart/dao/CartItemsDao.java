@@ -56,7 +56,6 @@ public class CartItemsDao {
             preparedStatement = connection.prepareStatement(CreateQuery.getSelectQuery(TABLE_NAME, CART_ID_COL));
             preparedStatement.setString(1, cartId);
             resultSet = preparedStatement.executeQuery();
-            System.out.println("IN CART ITEMS");
             while(resultSet.next()) {
 
                 String cartItemId = resultSet.getString(CART_ITEM_ID_COL);
@@ -79,6 +78,7 @@ public class CartItemsDao {
             if(preparedStatement != null) {
                 preparedStatement.close();
             }
+
         }
     }
     static boolean removeFromCart(String cartItemId) throws SQLException, ClassNotFoundException {
@@ -157,6 +157,7 @@ public class CartItemsDao {
             if(connection != null) {
                 connection.close();
             }
+
         }
     }
 }

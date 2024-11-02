@@ -1,5 +1,6 @@
 package com.flickart.dao;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -112,7 +113,7 @@ public class UserDao {
     }
 
 
-    public static User validateUser(String email, String password) throws ClassNotFoundException, SQLException {
+    public static User validateUser(String email, String password) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -178,10 +179,7 @@ public class UserDao {
             e.printStackTrace();
             throw new SQLException(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ClassNotFoundException(e.getMessage());
-        }finally {
+        finally {
             if(resultSet != null){
                 resultSet.close();
             }
