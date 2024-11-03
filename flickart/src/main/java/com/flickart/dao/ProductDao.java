@@ -84,7 +84,7 @@ public class ProductDao {
 			}
 		}
 	}
-	public static boolean updateProductCount(String productId, int updateCount) throws SQLException , ClassNotFoundException {
+	public static synchronized boolean updateProductCount(String productId, int updateCount) throws SQLException , ClassNotFoundException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		try {
@@ -164,7 +164,7 @@ public class ProductDao {
 	}
 		
 	}
-	public static boolean updateProductPrice(String productId, float price) throws Exception {
+	public static  boolean updateProductPrice(String productId, float price) throws Exception {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		try {
@@ -195,6 +195,7 @@ public class ProductDao {
 		PreparedStatement preparedStatement = null;
 		
 		try {
+
 			String query = "delete from "+TABLE_NAME+" where productId='"+productId+"'";
 			connection = JDBCUtil.getConnection();
 			preparedStatement = connection.prepareStatement(query);
@@ -519,7 +520,8 @@ public class ProductDao {
 			}
 		}
 	}
-	public static boolean updateProductRating(String productId, double rating) throws ClassNotFoundException, SQLException {
+	public static synchronized boolean updateProductRating(String productId, double rating) throws ClassNotFoundException, SQLException {
+
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
